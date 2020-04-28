@@ -1,3 +1,3 @@
 rootProject.name='KeypleFamoco'
 include ':demo-app'
-include ':keyple-famoco-se-plugin'
+include ':keyple-plugins:famoco-se-communication'
