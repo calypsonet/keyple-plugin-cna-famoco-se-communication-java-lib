@@ -18,6 +18,7 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+
 }
 
 allprojects {
@@ -36,6 +37,7 @@ allprojects {
         // Should check for updates every build
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
+
 }
 
 subprojects{
@@ -67,6 +69,7 @@ subprojects{
         classifier = 'javadoc'
         from dokka.outputDirectory
     }
+
 }
 
 ext{
@@ -81,6 +84,7 @@ ext{
 
     //test
     junit_version = '4.12'
+    mockk_version = '1.9'
 
     //androidTest
     junit_androidx_ext_version = '1.1.1'

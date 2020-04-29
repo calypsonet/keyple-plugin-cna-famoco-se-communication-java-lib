@@ -124,7 +124,7 @@ dependencies {
     implementation "com.arcao:slf4j-timber:$slf4j_timber_version@aar" //SLF4J binding for Timber
 
     testImplementation "junit:junit:$junit_version"
-
-    androidTestImplementation "androidx.test.ext:junit:$junit_androidx_ext_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
+    testImplementation files('libs/lib-secommunication-1.7.0.jar')
+    /** Mocking for tests **/
+    testImplementation "io.mockk:mockk:$mockk_version"
 }
