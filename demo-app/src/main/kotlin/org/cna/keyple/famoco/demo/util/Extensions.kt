@@ -1,3 +1,6 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ ********************************************************************************/
 package org.cna.keyple.famoco.demo.util
 
 import android.content.Context

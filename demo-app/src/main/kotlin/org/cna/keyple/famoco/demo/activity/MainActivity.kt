@@ -1,6 +1,8 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ ********************************************************************************/
 package org.cna.keyple.famoco.demo.activity
 
-import android.nfc.NfcAdapter
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import kotlinx.android.synthetic.main.activity_main.drawerLayout
@@ -20,7 +22,7 @@ import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
 
-class MainActivity: AbstractExampleActivity(){
+class MainActivity : AbstractExampleActivity() {
 
     private lateinit var poReader: AndroidNfcReader
     private lateinit var samReader: SeReader
@@ -36,7 +38,7 @@ class MainActivity: AbstractExampleActivity(){
         SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
         SeProxyService.getInstance().registerPlugin(AndroidFamocoPluginFactory())
 
-        //Configuration of AndroidNfc Reader
+        // Configuration of AndroidNfc Reader
         poReader = SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReader(AndroidNfcReader.PLUGIN_NAME) as AndroidNfcReader
         poReader.setParameter("FLAG_READER_RESET_STATE", null)
         poReader.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "100")
@@ -44,7 +46,6 @@ class MainActivity: AbstractExampleActivity(){
         poReader.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "0")
         (poReader as ObservableReader).addObserver(this)
         (poReader as ObservableReader).addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
-
     }
 
     override fun onResume() {
@@ -87,19 +88,19 @@ class MainActivity: AbstractExampleActivity(){
         when (item.itemId) {
             R.id.usecase1 -> {
                 clearEvents()
-                //configureUseCase1ExplicitSelectionAid()
+                // configureUseCase1ExplicitSelectionAid()
             }
             R.id.usecase2 -> {
                 clearEvents()
-                //configureUseCase2DefaultSelectionNotification()
+                // configureUseCase2DefaultSelectionNotification()
             }
             R.id.usecase3 -> {
                 clearEvents()
-                //configureUseCase3GroupedMultiSelection()
+                // configureUseCase3GroupedMultiSelection()
             }
             R.id.usecase4 -> {
                 clearEvents()
-                //configureUseCase4SequentialMultiSelection()
+                // configureUseCase4SequentialMultiSelection()
             }
         }
         return true
