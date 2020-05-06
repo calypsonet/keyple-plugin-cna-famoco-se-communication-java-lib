@@ -108,7 +108,7 @@ task installPlugin{
 }
 
 dependencies {
-    compileOnly files('libs/lib-secommunication-1.7.0.jar')
+    implementation files('libs/lib-secommunication-1.7.0.jar')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"

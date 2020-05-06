@@ -1,18 +1,19 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ ********************************************************************************/
 package org.eclipse.keyple.famoco.se.plugin
 
 import com.famoco.secommunication.SmartcardReader
 import io.mockk.MockKAnnotations
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
-import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-internal class AndroidFamocoReaderTest {
+internal class AndroidFamocoReaderImplTest {
 
     companion object {
         internal const val PLUGIN_NAME = "AndroidFamocoPlugin"
@@ -21,7 +22,7 @@ internal class AndroidFamocoReaderTest {
     }
 
     lateinit var nativeReader: SmartcardReader
-    lateinit var reader: AndroidFamocoReader
+    lateinit var reader: AndroidFamocoReaderImpl
 
     @Before
     fun setUp() {

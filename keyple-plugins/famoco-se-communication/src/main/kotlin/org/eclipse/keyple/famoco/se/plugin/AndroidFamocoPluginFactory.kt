@@ -9,10 +9,10 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin
 class AndroidFamocoPluginFactory : AbstractPluginFactory() {
 
     override fun getPluginName(): String {
-        return AndroidFamocoPlugin.name
+        return AndroidFamocoPluginImpl.name
     }
 
     override fun getPluginInstance(): ReaderPlugin {
-        return AndroidFamocoPlugin
+        return AndroidFamocoPluginImpl
     }
 }
