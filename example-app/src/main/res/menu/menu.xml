@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/usecase1"
+            android:title="Read transaction without SAM"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase2"
+            android:title="Read transaction with SAM"
+            android:checked="true"
+            />
+
+        <item
+            android:id="@+id/usecase3"
+            android:title="Increase transaction"
+            android:checked="true"
+            />
+        <item
+            android:id="@+id/usecase4"
+            android:title="Decrease transaction"
+            android:checked="true"
+            />
+    </group>
+</menu>
