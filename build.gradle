@@ -94,6 +94,11 @@ ext{
     timber_version = '4.7.1'
     slf4j_timber_version = '3.1'
 
+    lifecycle_version = '2.2.0'
+    rxjavaVersion = '2.1.13'
+    rxandroidVersion = '2.0.2'
+    daggerVersion = '2.19'
+
     //test
     junit_version = '4.12'
     mockk_version = '1.9'

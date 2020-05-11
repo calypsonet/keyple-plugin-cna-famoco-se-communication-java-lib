@@ -50,7 +50,6 @@ dependencies {
     implementation "org.eclipse.keyple:keyple-java-core:$keyple_version"
     implementation "org.eclipse.keyple:keyple-java-calypso:$keyple_version"
     implementation "org.eclipse.keyple:keyple-android-plugin-nfc:$keyple_version"
-
     implementation project(path: ':keyple-plugins:famoco-se-communication')
     //implementation "org.eclipse.keyple:famoco-se-communication:$keyple_version"
 
