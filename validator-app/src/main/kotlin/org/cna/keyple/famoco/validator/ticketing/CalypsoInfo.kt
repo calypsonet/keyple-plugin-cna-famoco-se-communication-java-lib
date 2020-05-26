@@ -1,6 +1,14 @@
 /********************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
- */
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.cna.keyple.famoco.validator.ticketing
 
 /**
@@ -22,7 +30,7 @@ object CalypsoInfo {
     /** AID 1TIC.ICA*  */
     const val AID = "315449432e494341"
     /** Audit-C0  */ // public final static String AID = "315449432E4943414C54";
-    /// ** 1TIC.ICA AID */
+    // / ** 1TIC.ICA AID */
     // public final static String AID = "315449432E494341";
     /** SAM C1 regular expression: platform, version and serial number values are ignored  */
     const val SAM_C1_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80.1[0-9a-fA-F]{14}829000"

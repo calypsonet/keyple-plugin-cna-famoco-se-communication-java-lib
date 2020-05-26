@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.cna.keyple.famoco.validator.ui.fragments
 
 import android.os.Bundle
@@ -11,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.airbnb.lottie.LottieDrawable
 import dagger.android.support.DaggerFragment
+import javax.inject.Inject
 import org.cna.keyple.famoco.validator.R
 import org.cna.keyple.famoco.validator.data.model.CardReaderResponse
 import org.cna.keyple.famoco.validator.data.model.Status
@@ -21,7 +33,6 @@ import org.cna.keyple.famoco.validator.util.ActivityUtils
 import org.cna.keyple.famoco.validator.viewModels.CardReaderViewModel
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
 import timber.log.Timber
-import javax.inject.Inject
 
 @ActivityScoped
 class CardReaderFragment @Inject constructor() : DaggerFragment(), BaseView {
@@ -32,7 +43,8 @@ class CardReaderFragment @Inject constructor() : DaggerFragment(), BaseView {
     var viewModelFactory: ViewModelProvider.Factory? = null
     var binding: FragmentCardReaderBinding? = null
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment

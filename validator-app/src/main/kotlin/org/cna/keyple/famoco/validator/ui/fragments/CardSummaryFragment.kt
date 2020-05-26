@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.cna.keyple.famoco.validator.ui.fragments
 
 import android.media.MediaPlayer
@@ -10,19 +21,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 import org.cna.keyple.famoco.validator.R
 import org.cna.keyple.famoco.validator.data.model.Status
 import org.cna.keyple.famoco.validator.data.model.Status.Companion.getStatus
 import org.cna.keyple.famoco.validator.databinding.FragmentCardSummaryBinding
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CardSummaryFragment : Fragment() {
     var binding: FragmentCardSummaryBinding? = null
     private val timer = Timer()
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -103,7 +118,7 @@ class CardSummaryFragment : Fragment() {
         }
         binding?.animation?.playAnimation()
 
-        //Play sound
+        // Play sound
         val mp =
             MediaPlayer.create(activity, R.raw.reading_sound)
         mp.start()

@@ -1,6 +1,14 @@
 /********************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
- */
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.cna.keyple.famoco.validator.ticketing
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
@@ -76,8 +84,8 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
     }
 
     val poIdentification: String
-        get() = (ByteArrayUtil.toHex(calypsoPo!!.applicationSerialNumber) + ", "
-                + calypsoPo!!.revision.toString())
+        get() = (ByteArrayUtil.toHex(calypsoPo!!.applicationSerialNumber) + ", " +
+                calypsoPo!!.revision.toString())
 
     /**
      * initial PO content analysis
@@ -119,14 +127,14 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
 
         return try {
             if (samReader.isSePresent) {
-                val selectionResult = samSelection.processExplicitSelection(samReader);
-                if(selectionResult.hasActiveSelection()){
+                val selectionResult = samSelection.processExplicitSelection(samReader)
+                if (selectionResult.hasActiveSelection()) {
                     val calypsoSam = selectionResult.activeSelection.matchingSe as CalypsoSam
                     if (!calypsoSam.isSelected) {
                         throw IllegalStateException("Unable to open a logical channel for SAM!")
                     }
                     SamResource(samReader, calypsoSam)
-                }else{
+                } else {
                     throw IllegalStateException("Sam selection failed")
                 }
             } else {
@@ -136,5 +144,4 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
             throw IllegalStateException("Reader exception: " + e.message)
         }
     }
-
 }

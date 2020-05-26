@@ -1,10 +1,19 @@
 /********************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
- */
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.cna.keyple.famoco.validator.ticketing
 
+import java.util.SortedMap
+import java.util.TreeMap
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import java.util.*
 
 class CardContent {
     var serialNumber: ByteArray? = null
@@ -22,10 +31,10 @@ class CardContent {
     var counters: SortedMap<Int, Int>
 
     override fun toString(): String {
-        return ("SN : " + (if (serialNumber != null) ByteArrayUtil.toHex(serialNumber) else "null")
-                + "- PoTypeName:" + poTypeName + " - Ticket available:"
-                + (if (counters.size > 0) counters[1] else "empty") + " - Contracts available : "
-                + if (contracts.size > 0) String(contracts[1]!!) else "empty")
+        return ("SN : " + (if (serialNumber != null) ByteArrayUtil.toHex(serialNumber) else "null") +
+                "- PoTypeName:" + poTypeName + " - Ticket available:" +
+                (if (counters.size > 0) counters[1] else "empty") + " - Contracts available : " +
+                if (contracts.size > 0) String(contracts[1]!!) else "empty")
     }
 
     init {

@@ -1,23 +1,24 @@
+/********************************************************************************
+ * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.cna.keyple.famoco.validator.data
 
 import android.app.Activity
+import javax.inject.Inject
 import org.cna.keyple.famoco.validator.di.scopes.AppScoped
-import org.cna.keyple.famoco.validator.ticketing.CalypsoInfo
-import org.cna.keyple.famoco.validator.ticketing.ITicketingSession
 import org.cna.keyple.famoco.validator.ticketing.TicketingSession
 import org.cna.keyple.famoco.validator.ticketing.TicketingSessionManager
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
-import org.eclipse.keyple.calypso.transaction.PoSelector
-import org.eclipse.keyple.calypso.transaction.SamResource
-import org.eclipse.keyple.calypso.transaction.SamResourceManager
-import org.eclipse.keyple.calypso.transaction.SamResourceManagerDefault
 import org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory
-import org.eclipse.keyple.core.selection.SeSelection
-import org.eclipse.keyple.core.seproxy.ChannelControl
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
@@ -31,7 +32,6 @@ import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings.getSetting
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
-import javax.inject.Inject
 
 @AppScoped
 class CardReaderApi @Inject constructor() {
@@ -62,17 +62,16 @@ class CardReaderApi @Inject constructor() {
         /* remove the observer if it already exist */
         (poReader as ObservableReader).addObserver(observer)
 
-        //val samResourceManager = SamResourceManagerFactory.instantiate(SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME), CalypsoInfo.SAM_C1_ATR_REGEX)
+        // val samResourceManager = SamResourceManagerFactory.instantiate(SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME), CalypsoInfo.SAM_C1_ATR_REGEX)
         val samResourceManager = SamResourceManagerFactory.instantiate(SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME), "AndroidFamocoReader")
         samReader = SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME).getReader(AndroidFamocoReader.READER_NAME)
 
         ticketingSessionManager = TicketingSessionManager()
 
         ticketingSession = ticketingSessionManager.createTicketingSession(poReader, samReader) as TicketingSession
-
     }
 
-    fun startNfcDetection(activity: Activity){
+    fun startNfcDetection(activity: Activity) {
         (poReader as AndroidNfcReader).enableNFCReaderMode(activity)
 
         /*
@@ -88,7 +87,7 @@ class CardReaderApi @Inject constructor() {
         (poReader as ObservableReader).startSeDetection(ObservableReader.PollingMode.REPEATING)
     }
 
-    fun stopNfcDetection(activity: Activity){
+    fun stopNfcDetection(activity: Activity) {
         try {
             // notify reader that se detection has been switched off
             (poReader as AndroidNfcReader).stopSeDetection()
@@ -99,7 +98,7 @@ class CardReaderApi @Inject constructor() {
         }
     }
 
-    fun getTicketingSession(): TicketingSession{
+    fun getTicketingSession(): TicketingSession {
         return ticketingSession
     }
 }

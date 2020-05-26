@@ -1,11 +1,22 @@
 /********************************************************************************
  * Copyright (c) 2020 Calypso Networks Association https://www.calypsonet-asso.org/
- */
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.cna.keyple.famoco.validator.ticketing
 
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Arrays
+import java.util.Date
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
-import org.eclipse.keyple.calypso.command.sam.SamRevision
 import org.eclipse.keyple.calypso.exception.NoResourceAvailableException
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.PoResource
@@ -13,9 +24,7 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoSelector.PoAidSelector
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.calypso.transaction.SamIdentifier
 import org.eclipse.keyple.calypso.transaction.SamResource
-import org.eclipse.keyple.calypso.transaction.SamResourceManager
 import org.eclipse.keyple.calypso.transaction.SecuritySettings
 import org.eclipse.keyple.core.selection.AbstractMatchingSe
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
@@ -36,9 +45,6 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
     AbstractTicketingSession(poReader!!, samReader!!), ITicketingSession {
@@ -55,7 +61,6 @@ class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
          * Prepare a PO selection
          */
         seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
-
 
         /* Select Calypso */
         val poSelectionRequest = PoSelectionRequest(
@@ -516,7 +521,8 @@ class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
         override fun parse(seResponse: SeResponse): AbstractMatchingSe {
             class GenericMatchingSe(
                 selectionResponse: SeResponse?,
-                transmissionMode: TransmissionMode?, extraInfo: String?
+                transmissionMode: TransmissionMode?,
+                extraInfo: String?
             ) : AbstractMatchingSe(selectionResponse, transmissionMode, extraInfo)
             return GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE")
         }
