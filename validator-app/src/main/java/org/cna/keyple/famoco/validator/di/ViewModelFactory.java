@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+//Wee keep this in java because of: https://github.com/google/dagger/issues/1478
 @AppScoped
 public class ViewModelFactory implements ViewModelProvider.Factory {
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
