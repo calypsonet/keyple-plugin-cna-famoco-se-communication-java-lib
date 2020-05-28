@@ -32,7 +32,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector.IsoAid
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 
-class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader) : AbstractTicketingSession(poReader, samReader), ITicketingSession {
+class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader?) : AbstractTicketingSession(poReader, samReader), ITicketingSession {
     /**
      * prepare the default selection
      */
@@ -54,6 +54,7 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader)
                 "AID: ${CalypsoInfo.AID}"
             )
         )
+
         readEnvironmentHolderParserIndex = poSelectionRequest.prepareReadRecordsCmd(
             CalypsoInfo.SFI_EnvironmentAndHolder, ReadDataStructure.SINGLE_RECORD_DATA,
             CalypsoInfo.RECORD_NUMBER_1, String.format(
@@ -61,6 +62,7 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader)
                 CalypsoInfo.SFI_EnvironmentAndHolder
             )
         )
+
         readContractParserIndex = poSelectionRequest.prepareReadRecordsCmd(
             CalypsoInfo.SFI_Contracts,
             ReadDataStructure.SINGLE_RECORD_DATA,
@@ -96,27 +98,24 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader)
      */
     @Throws(KeypleReaderException::class)
     override fun loadTickets(ticketNumber: Int): Int {
-        var samResource: SamResource? = null
         return try {
-
-            samResource = checkSamAndOpenChannel(samReader)
-
-            if (samResource == null) {
-                throw KeypleReaderException("Unable to get a Sam Resource")
-            }
             /**
              * Open channel (again?)
              */
             val selectionsResult = processExplicitSelection()
 
-            /* No sucessful selection */if (!selectionsResult.hasActiveSelection()) {
+            /* No sucessful selection */
+            if (!selectionsResult.hasActiveSelection()) {
                 logger.error("PO Not selected")
                 return ITicketingSession.STATUS_SESSION_ERROR
             }
-            val poTransaction = PoTransaction(
-                PoResource(poReader, calypsoPo),
-                samResource, SecuritySettings()
-            )
+
+            val poTransaction =
+                if(samReader != null)
+                    PoTransaction(PoResource(poReader, calypsoPo), checkSamAndOpenChannel(samReader), SecuritySettings())
+                else
+                    PoTransaction(PoResource(poReader, calypsoPo))
+
             if (!Arrays.equals(currentPoSN, calypsoPo.applicationSerialNumber)) {
                 logger.info("Load ticket status  : {}", "STATUS_CARD_SWITCHED")
                 return ITicketingSession.STATUS_CARD_SWITCHED

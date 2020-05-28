@@ -30,13 +30,6 @@ class CardContent {
     var contracts: SortedMap<Int, ByteArray>
     var counters: SortedMap<Int, Int>
 
-    override fun toString(): String {
-        return ("SN : " + (if (serialNumber != null) ByteArrayUtil.toHex(serialNumber) else "null") +
-                "- PoTypeName:" + poTypeName + " - Ticket available:" +
-                (if (counters.size > 0) counters[1] else "empty") + " - Contracts available : " +
-                if (contracts.size > 0) String(contracts[1]!!) else "empty")
-    }
-
     init {
         counters = TreeMap()
         contracts = TreeMap()
@@ -47,5 +40,12 @@ class CardContent {
         environment = TreeMap()
         id = TreeMap()
         icc = TreeMap()
+    }
+
+    override fun toString(): String {
+        return ("SN : " + (if (serialNumber != null) ByteArrayUtil.toHex(serialNumber) else "null") +
+                "- PoTypeName:" + poTypeName + " - Ticket available:" +
+                (if (counters.size > 0) counters[1] else "empty") + " - Contracts available : " +
+                if (contracts.size > 0) String(contracts[1]!!) else "empty")
     }
 }

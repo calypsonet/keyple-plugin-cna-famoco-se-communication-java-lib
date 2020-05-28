@@ -33,21 +33,13 @@ import org.cna.keyple.famoco.validator.data.model.Status.Companion.getStatus
 import org.cna.keyple.famoco.validator.databinding.FragmentCardSummaryBinding
 
 class CardSummaryFragment : Fragment() {
-    var binding: FragmentCardSummaryBinding? = null
+
+    lateinit var binding: FragmentCardSummaryBinding
     private val timer = Timer()
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_card_summary,
-            container,
-            false
-        )
-        binding?.setLifecycleOwner(this)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_card_summary, container, false)
+        binding.lifecycleOwner = this
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         val mTitle =
             activity!!.findViewById<TextView>(R.id.toolbar_title)

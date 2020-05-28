@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.cna.keyple.famoco.validator.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,108 +37,79 @@ import timber.log.Timber
 
 @ActivityScoped
 class CardReaderFragment @Inject constructor() : DaggerFragment(), BaseView {
-    var cardReaderViewModel: CardReaderViewModel? = null
-
-    @JvmField
     @Inject
-    var viewModelFactory: ViewModelProvider.Factory? = null
-    var binding: FragmentCardReaderBinding? = null
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var cardReaderViewModel: CardReaderViewModel
+    lateinit var binding: FragmentCardReaderBinding
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        cardReaderViewModel = ViewModelProvider(this, viewModelFactory).get(CardReaderViewModel::class.java)
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_card_reader,
-            container,
-            false
-        )
-        cardReaderViewModel =
-            ViewModelProvider(this, viewModelFactory!!).get(
-                CardReaderViewModel::class.java
-            )
-        binding?.setLifecycleOwner(this)
-        binding?.setViewModel(cardReaderViewModel)
-        binding?.animation?.setAnimation("card_scan.json")
-        binding?.animation?.playAnimation()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_card_reader,container,false)
+        binding.lifecycleOwner = this
+        binding.viewModel = cardReaderViewModel
+        binding.animation.setAnimation("card_scan.json")
+        binding.animation.playAnimation()
+
         try {
-            cardReaderViewModel!!.initCardReader()
+            cardReaderViewModel.initCardReader()
         } catch (e: KeypleBaseException) {
             Timber.e(e)
         }
-        return binding?.getRoot()
+        return binding.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
     override fun onResume() {
         super.onResume()
         bindViewModel()
-        binding!!.animation.playAnimation()
-        cardReaderViewModel!!.startNfcDetection(activity)
+        binding.animation.playAnimation()
+        cardReaderViewModel.startNfcDetection(activity)
     }
 
     override fun onPause() {
         super.onPause()
         unbindViewModel()
-        binding!!.animation.cancelAnimation()
-        cardReaderViewModel!!.stopNfcDetection(activity)
-    }
-
-    override fun onStop() {
-        super.onStop()
+        binding.animation.cancelAnimation()
+        cardReaderViewModel.stopNfcDetection(activity)
     }
 
     override fun bindViewModel() {
-        cardReaderViewModel!!.response.observe(
-            this,
-            Observer { cardReaderResponse: CardReaderResponse? ->
-                changeDisplay(cardReaderResponse)
-            }
-        )
+        cardReaderViewModel.response.observe(this, Observer { cardReaderResponse: CardReaderResponse? -> changeDisplay(cardReaderResponse)})
     }
 
     override fun unbindViewModel() {
-        cardReaderViewModel!!.response.removeObservers(this)
+        cardReaderViewModel.response.removeObservers(this)
     }
 
-    fun changeDisplay(cardReaderResponse: CardReaderResponse?) {
+    private fun changeDisplay(cardReaderResponse: CardReaderResponse?) {
         if (cardReaderResponse != null) {
             if (cardReaderResponse.status === Status.LOADING) {
-                binding!!.presentCardTv.visibility = View.GONE
-                binding!!.mainView.setBackgroundColor(resources.getColor(R.color.turquoise))
-                (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-                val mTitle =
-                    activity!!.findViewById<TextView>(R.id.toolbar_title)
-                mTitle.setText(R.string.card_reading_title)
-                binding!!.animation.playAnimation()
-                binding!!.animation.repeatCount = LottieDrawable.INFINITE
+                val mTitle = activity?.findViewById<TextView>(R.id.toolbar_title)
+                mTitle?.setText(R.string.card_reading_title)
+
+                binding.presentCardTv.visibility = View.GONE
+                binding.mainView.setBackgroundColor(resources.getColor(R.color.turquoise))
+                (activity as AppCompatActivity?)?.supportActionBar?.show()
+                binding.animation.playAnimation()
+                binding.animation.repeatCount = LottieDrawable.INFINITE
             } else {
-                binding!!.animation.cancelAnimation()
+                binding.animation.cancelAnimation()
                 val bundle = Bundle()
-                bundle.putString(
-                    CardSummaryFragment.STATUS_KEY,
-                    cardReaderResponse.status.toString()
-                )
+                bundle.putString(CardSummaryFragment.STATUS_KEY, cardReaderResponse.status.toString())
                 bundle.putInt(CardSummaryFragment.TICKETS_KEY, cardReaderResponse.ticketsNumber)
                 bundle.putString(CardSummaryFragment.CONTRACT, cardReaderResponse.contract)
                 bundle.putString(CardSummaryFragment.CARD_TYPE, cardReaderResponse.cardType)
                 val fragment = CardSummaryFragment()
                 fragment.arguments = bundle
-                ActivityUtils.addFragmentToActivity(
-                    fragmentManager!!,
-                    fragment,
-                    R.id.contentFrame
-                )
+                ActivityUtils.addFragmentToActivity(parentFragmentManager, fragment, R.id.contentFrame)
             }
         } else {
-            binding!!.presentCardTv.visibility = View.VISIBLE
+            binding.presentCardTv.visibility = View.VISIBLE
         }
-    }
-
-    companion object {
-        private const val TAG_NFC_ANDROID_FRAGMENT =
-            "org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment"
     }
 }

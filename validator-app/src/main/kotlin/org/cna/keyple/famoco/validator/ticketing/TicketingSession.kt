@@ -210,26 +210,14 @@ class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
      * @return
      */
     fun personalize(profile: String): Boolean {
-        var samResource: SamResource? = null
         try {
-            /*
-             * Allocate a Sam Resource
-             */
-            samResource = checkSamAndOpenChannel(samReader)
-            if (samResource == null) {
-                throw KeypleReaderException("Unable to get a Sam Resource")
-            }
-            val poTransaction = PoTransaction(
-                PoResource(poReader, calypsoPo),
-                samResource, SecuritySettings()
-            )
-            var poProcessStatus = false
-            poProcessStatus = poTransaction.processOpening(
-                PoTransaction.ModificationMode.ATOMIC,
-                PoTransaction.SessionAccessLevel.SESSION_LVL_PERSO,
-                0.toByte(),
-                0.toByte()
-            )
+            //Should block poTransaction without Sam?
+            val poTransaction = if(samReader != null)
+                    PoTransaction(PoResource(poReader, calypsoPo), checkSamAndOpenChannel(samReader), SecuritySettings())
+                else
+                    PoTransaction(PoResource(poReader, calypsoPo))
+            var poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC, PoTransaction.SessionAccessLevel.SESSION_LVL_PERSO, 0.toByte(), 0.toByte())
+
             if ("PROFILE1" == profile) {
                 poTransaction.prepareUpdateRecordCmd(
                     CalypsoInfo.SFI_EnvironmentAndHolder,
@@ -290,19 +278,14 @@ class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
      */
     @Throws(KeypleReaderException::class)
     override fun loadTickets(ticketNumber: Int): Int {
-        var samResource: SamResource? = null
+
         return try {
-            /*
-             * Allocate a Sam Resource
-             */
-            samResource = checkSamAndOpenChannel(samReader)
-            if (samResource == null) {
-                throw KeypleReaderException("Unable to get a Sam Resource")
-            }
-            val poTransaction = PoTransaction(
-                PoResource(poReader, calypsoPo),
-                samResource, SecuritySettings()
-            )
+            //Should block poTransaction without Sam?
+            val poTransaction = if(samReader != null)
+                PoTransaction(PoResource(poReader, calypsoPo), checkSamAndOpenChannel(samReader), SecuritySettings())
+            else
+                PoTransaction(PoResource(poReader, calypsoPo))
+
             if (!Arrays.equals(currentPoSN, calypsoPo.applicationSerialNumber)) {
                 logger.info("Load ticket status  : {}", "STATUS_CARD_SWITCHED")
                 return ITicketingSession.STATUS_CARD_SWITCHED
@@ -375,18 +358,14 @@ class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
     }
 
     fun debitTickets(ticketNumber: Int): Int {
-        var samResource: SamResource? = null
         return try {
-            /*
-             * Allocate a Sam Resource
-             */
-            samResource = checkSamAndOpenChannel(samReader)
-            if (samResource == null) {
-                throw KeypleReaderException("Unable to get a Sam Resource")
-            }
-            val poTransaction = PoTransaction(
-                PoResource(poReader, calypsoPo), samResource, SecuritySettings()
-            )
+            //Should block poTransaction without Sam?
+
+            val poTransaction = if(samReader != null)
+                PoTransaction(PoResource(poReader, calypsoPo), checkSamAndOpenChannel(samReader), SecuritySettings())
+            else
+                PoTransaction(PoResource(poReader, calypsoPo))
+
             if (!Arrays.equals(currentPoSN, calypsoPo.applicationSerialNumber)) {
                 logger.info("Validate ticket status  : {}", "STATUS_CARD_SWITCHED")
                 return ITicketingSession.STATUS_CARD_SWITCHED
@@ -450,19 +429,13 @@ class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
      */
     @Throws(KeypleReaderException::class)
     fun loadContract(): Int {
-        var samResource: SamResource? = null
         return try {
-            /*
-             * Allocate a Sam Resource
-             */
-            samResource = checkSamAndOpenChannel(samReader)
-            if (samResource == null) {
-                throw KeypleReaderException("Unable to get a Sam Resource")
-            }
-            val poTransaction = PoTransaction(
-                PoResource(poReader, calypsoPo),
-                samResource, SecuritySettings()
-            )
+            //Should block poTransaction without Sam?
+            val poTransaction = if(samReader != null)
+                PoTransaction(PoResource(poReader, calypsoPo), checkSamAndOpenChannel(samReader), SecuritySettings())
+            else
+                PoTransaction(PoResource(poReader, calypsoPo))
+
             if (!Arrays.equals(currentPoSN, calypsoPo.applicationSerialNumber)) {
                 return ITicketingSession.STATUS_CARD_SWITCHED
             }
@@ -517,19 +490,12 @@ class TicketingSession(poReader: SeReader?, samReader: SeReader?) :
      */
     inner class GenericSeSelectionRequest(seSelector: SeSelector) :
         AbstractSeSelectionRequest(seSelector) {
-        var transmissionMode: TransmissionMode
+        private val transmissionMode = seSelector.seProtocol.transmissionMode
         override fun parse(seResponse: SeResponse): AbstractMatchingSe {
-            class GenericMatchingSe(
-                selectionResponse: SeResponse?,
-                transmissionMode: TransmissionMode?,
-                extraInfo: String?
-            ) : AbstractMatchingSe(selectionResponse, transmissionMode, extraInfo)
+            class GenericMatchingSe(selectionResponse: SeResponse?, transmissionMode: TransmissionMode?, extraInfo: String?) : AbstractMatchingSe(selectionResponse, transmissionMode, extraInfo)
             return GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE")
         }
 
-        init {
-            transmissionMode = seSelector.seProtocol.transmissionMode
-        }
     }
 
     /*

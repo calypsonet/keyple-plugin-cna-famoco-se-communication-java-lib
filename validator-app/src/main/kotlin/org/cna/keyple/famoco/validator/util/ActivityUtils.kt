@@ -20,12 +20,7 @@ object ActivityUtils {
      * The fragment is added to the container view with id frameId. The operation is
      * performed by the fragmentManager.
      */
-    @JvmStatic
-    fun addFragmentToActivity(
-        fragmentManager: FragmentManager,
-        fragment: Fragment,
-        frameId: Int
-    ) {
+    fun addFragmentToActivity(fragmentManager: FragmentManager, fragment: Fragment, frameId: Int) {
         Preconditions.checkNotNull(
             fragmentManager
         )

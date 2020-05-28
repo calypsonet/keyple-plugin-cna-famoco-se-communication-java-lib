@@ -30,7 +30,7 @@ import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-abstract class AbstractTicketingSession protected constructor(val poReader: SeReader, protected val samReader: SeReader) {
+abstract class AbstractTicketingSession protected constructor(val poReader: SeReader, protected val samReader: SeReader?) {
     protected lateinit var calypsoPo: CalypsoPo
     protected lateinit var seSelection: SeSelection
     protected var readEventLogParserIndex = 0

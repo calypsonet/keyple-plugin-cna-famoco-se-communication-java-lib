@@ -22,9 +22,10 @@ import org.cna.keyple.famoco.validator.util.ActivityUtils.addFragmentToActivity
 
 @VisibleForTesting
 class MainActivity : DaggerAppCompatActivity() {
-    @JvmField
+
     @Inject
-    var mInjectedFragment: CardReaderFragment? = null
+    lateinit var mInjectedFragment: CardReaderFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -36,15 +37,7 @@ class MainActivity : DaggerAppCompatActivity() {
         setSupportActionBar(myToolbar)
 
         // Set up fragment
-        var fragment =
-            supportFragmentManager.findFragmentById(R.id.contentFrame) as CardReaderFragment?
-        if (fragment == null) {
-            fragment = mInjectedFragment
-            addFragmentToActivity(
-                supportFragmentManager,
-                fragment!!,
-                R.id.contentFrame
-            )
-        }
+        val fragment = supportFragmentManager.findFragmentById(R.id.contentFrame)?: mInjectedFragment
+        addFragmentToActivity(supportFragmentManager, fragment, R.id.contentFrame)
     }
 }
