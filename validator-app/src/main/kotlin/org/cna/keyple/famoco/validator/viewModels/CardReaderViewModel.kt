@@ -26,7 +26,7 @@ import org.cna.keyple.famoco.validator.ticketing.TicketingSession
 import org.cna.keyple.famoco.validator.util.LiveEvent
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 import timber.log.Timber
 
 @AppScoped
@@ -66,7 +66,7 @@ class CardReaderViewModel @Inject constructor(private val cardReaderApi: CardRea
         )
     }
 
-    @Throws(KeypleBaseException::class)
+    @Throws(KeyplePluginInstantiationException::class)
     fun initCardReader() {
         Timber.d("initCardReader")
         if (!readersInitialized) {

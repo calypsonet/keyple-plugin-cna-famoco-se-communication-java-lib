@@ -11,10 +11,13 @@
  ********************************************************************************/
 package org.cna.keyple.famoco.validator.ticketing
 
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
 import org.eclipse.keyple.calypso.command.sam.SamRevision
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
 import org.eclipse.keyple.calypso.transaction.CalypsoSam
+import org.eclipse.keyple.calypso.transaction.ElementaryFile
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings.PoSecuritySettingsBuilder
+import org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel
 import org.eclipse.keyple.calypso.transaction.SamResource
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest
 import org.eclipse.keyple.calypso.transaction.SamSelector
@@ -27,28 +30,21 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import timber.log.Timber
 
 abstract class AbstractTicketingSession protected constructor(val poReader: SeReader, protected val samReader: SeReader?) {
     protected lateinit var calypsoPo: CalypsoPo
     protected lateinit var seSelection: SeSelection
-    protected var readEventLogParserIndex = 0
-    public var readEnvironmentHolderParserIndex = 0
-    protected var readCounterParserIndex = 0
-    protected var readContractParserIndex = 0
     var poTypeName: String? = null
         protected set
     var cardContent: CardContent = CardContent()
         protected set
     protected var currentPoSN: ByteArray? = null
-    val logger =
-        LoggerFactory.getLogger(TicketingSessionExplicitSelection::class.java) as Logger
     protected var calypsoPoIndex = 0
-    protected lateinit var readEnvironmentHolderParser: ReadRecordsRespPars
-    protected lateinit var readEventLogParser: ReadRecordsRespPars
-    protected lateinit var readCounterParser: ReadRecordsRespPars
-    protected lateinit var readContractParser: ReadRecordsRespPars
+    protected lateinit var efEnvironmentHolder: ElementaryFile
+    protected lateinit var efEventLog: ElementaryFile
+    protected lateinit var efCounter: ElementaryFile
+    protected lateinit var efContractParser: ElementaryFile
     protected fun pad(text: String, c: Char, length: Int): String {
         val sb = StringBuffer(length)
         sb.append(text)
@@ -59,33 +55,24 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
     }
 
     fun processSelectionsResult(selectionsResult: SelectionsResult) {
-        val selectionIndex =
-            selectionsResult.matchingSelections[0].selectionIndex
-        if (selectionIndex == calypsoPoIndex) {
-            calypsoPo = selectionsResult.activeSelection.matchingSe as CalypsoPo
-            poTypeName = "CALYPSO"
-            readEnvironmentHolderParser = selectionsResult
-                .activeSelection
-                .getResponseParser(readEnvironmentHolderParserIndex) as ReadRecordsRespPars
-            readEventLogParser = selectionsResult.activeSelection
-                .getResponseParser(readEventLogParserIndex) as ReadRecordsRespPars
-            readCounterParser = selectionsResult.activeSelection
-                .getResponseParser(readCounterParserIndex) as ReadRecordsRespPars
-            readContractParser = selectionsResult.activeSelection
-                .getResponseParser(readContractParserIndex) as ReadRecordsRespPars
+        val selectionIndex = selectionsResult.matchingSelections.keys.first()
 
-            /*
-             * fill in cardContent
-             */analyzePoProfile()
+        if (selectionIndex == calypsoPoIndex) {
+            calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
+            poTypeName = "CALYPSO"
+            efEnvironmentHolder = calypsoPo.getFileBySfi(CalypsoInfo.SFI_EnvironmentAndHolder)
+            efEventLog = calypsoPo.getFileBySfi(CalypsoInfo.SFI_EventLog)
+            efCounter = calypsoPo.getFileBySfi(CalypsoInfo.SFI_Counter)
+            efContractParser = calypsoPo.getFileBySfi(CalypsoInfo.SFI_Contracts)
         } else {
             poTypeName = "OTHER"
         }
-        logger.info("PO type = {}", poTypeName)
+        Timber.i("PO type = $poTypeName")
     }
 
     val poIdentification: String
-        get() = (ByteArrayUtil.toHex(calypsoPo!!.applicationSerialNumber) + ", " +
-                calypsoPo!!.revision.toString())
+        get() = (ByteArrayUtil.toHex(calypsoPo.applicationSerialNumber) + ", " +
+                calypsoPo.revision.toString())
 
     /**
      * initial PO content analysis
@@ -94,15 +81,14 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
      */
     fun analyzePoProfile(): Boolean {
         var status = false
-        if (calypsoPo.isSelected) {
+        if (calypsoPo.startupInfo != null) {
             currentPoSN = calypsoPo.applicationSerialNumber
             cardContent.serialNumber = currentPoSN
             cardContent.poRevision = calypsoPo.revision.toString()
-            cardContent.extraInfo = calypsoPo.selectionExtraInfo
-            cardContent.environment = readEnvironmentHolderParser.records
-            cardContent.eventLog = readEventLogParser.records
-            cardContent.counters = readCounterParser.counters
-            cardContent.contracts = readContractParser.records
+            cardContent.environment = efEnvironmentHolder.data.allRecordsContent
+            cardContent.eventLog = efEventLog.data.allRecordsContent
+            cardContent.counters = efCounter.data.allCountersValue
+            cardContent.contracts = efContractParser.data.allRecordsContent
             status = true
         }
         return status
@@ -121,7 +107,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
          */
         val samSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-        val samSelector = SamSelector(SamRevision.C1, null, "Sam Selector")
+        val samSelector = SamSelector(SamRevision.C1, null)
 
         samSelection.prepareSelection(SamSelectionRequest(samSelector))
 
@@ -129,10 +115,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
             if (samReader.isSePresent) {
                 val selectionResult = samSelection.processExplicitSelection(samReader)
                 if (selectionResult.hasActiveSelection()) {
-                    val calypsoSam = selectionResult.activeSelection.matchingSe as CalypsoSam
-                    if (!calypsoSam.isSelected) {
-                        throw IllegalStateException("Unable to open a logical channel for SAM!")
-                    }
+                    val calypsoSam = selectionResult.activeMatchingSe as CalypsoSam
                     SamResource(samReader, calypsoSam)
                 } else {
                     throw IllegalStateException("Sam selection failed")
@@ -143,5 +126,37 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
         } catch (e: KeypleReaderException) {
             throw IllegalStateException("Reader exception: " + e.message)
         }
+    }
+
+    open fun getSecuritySettings(samResource: SamResource?): PoSecuritySettings? {
+
+        // The default KIF values for personalization, loading and debiting
+        val DEFAULT_KIF_PERSO = 0x21.toByte()
+        val DEFAULT_KIF_LOAD = 0x27.toByte()
+        val DEFAULT_KIF_DEBIT = 0x30.toByte()
+        // The default key record number values for personalization, loading and debiting
+        // The actual value should be adjusted.
+        val DEFAULT_KEY_RECORD_NUMBER_PERSO = 0x01.toByte()
+        val DEFAULT_KEY_RECORD_NUMBER_LOAD = 0x02.toByte()
+        val DEFAULT_KEY_RECORD_NUMBER_DEBIT = 0x03.toByte()
+
+        /* define the security parameters to provide when creating PoTransaction */
+        return PoSecuritySettingsBuilder(samResource) //
+            .sessionDefaultKif(AccessLevel.SESSION_LVL_PERSO, DEFAULT_KIF_PERSO) //
+            .sessionDefaultKif(AccessLevel.SESSION_LVL_LOAD, DEFAULT_KIF_LOAD) //
+            .sessionDefaultKif(AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT) //
+            .sessionDefaultKeyRecordNumber(
+                AccessLevel.SESSION_LVL_PERSO,
+                DEFAULT_KEY_RECORD_NUMBER_PERSO
+            ) //
+            .sessionDefaultKeyRecordNumber(
+                AccessLevel.SESSION_LVL_LOAD,
+                DEFAULT_KEY_RECORD_NUMBER_LOAD
+            ) //
+            .sessionDefaultKeyRecordNumber(
+                AccessLevel.SESSION_LVL_DEBIT,
+                DEFAULT_KEY_RECORD_NUMBER_DEBIT
+            )
+            .build()
     }
 }

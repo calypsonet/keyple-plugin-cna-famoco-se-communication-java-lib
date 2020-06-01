@@ -32,7 +32,7 @@ import org.cna.keyple.famoco.validator.di.scopes.ActivityScoped
 import org.cna.keyple.famoco.validator.ui.BaseView
 import org.cna.keyple.famoco.validator.util.ActivityUtils
 import org.cna.keyple.famoco.validator.viewModels.CardReaderViewModel
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 import timber.log.Timber
 
 @ActivityScoped
@@ -45,7 +45,7 @@ class CardReaderFragment @Inject constructor() : DaggerFragment(), BaseView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         cardReaderViewModel = ViewModelProvider(this, viewModelFactory).get(CardReaderViewModel::class.java)
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_card_reader,container,false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_card_reader, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = cardReaderViewModel
         binding.animation.setAnimation("card_scan.json")
@@ -53,7 +53,7 @@ class CardReaderFragment @Inject constructor() : DaggerFragment(), BaseView {
 
         try {
             cardReaderViewModel.initCardReader()
-        } catch (e: KeypleBaseException) {
+        } catch (e: KeyplePluginInstantiationException) {
             Timber.e(e)
         }
         return binding.root
@@ -79,7 +79,7 @@ class CardReaderFragment @Inject constructor() : DaggerFragment(), BaseView {
     }
 
     override fun bindViewModel() {
-        cardReaderViewModel.response.observe(this, Observer { cardReaderResponse: CardReaderResponse? -> changeDisplay(cardReaderResponse)})
+        cardReaderViewModel.response.observe(this, Observer { cardReaderResponse: CardReaderResponse? -> changeDisplay(cardReaderResponse) })
     }
 
     override fun unbindViewModel() {

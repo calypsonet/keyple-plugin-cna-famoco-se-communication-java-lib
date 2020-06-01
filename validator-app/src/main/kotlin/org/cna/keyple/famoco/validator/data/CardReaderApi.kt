@@ -16,11 +16,9 @@ import javax.inject.Inject
 import org.cna.keyple.famoco.validator.di.scopes.AppScoped
 import org.cna.keyple.famoco.validator.ticketing.TicketingSession
 import org.cna.keyple.famoco.validator.ticketing.TicketingSessionManager
-import org.eclipse.keyple.calypso.transaction.SamResourceManagerFactory
 import org.eclipse.keyple.core.seproxy.SeProxyService
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
@@ -41,7 +39,7 @@ class CardReaderApi @Inject constructor() {
     private lateinit var ticketingSessionManager: TicketingSessionManager
     private lateinit var ticketingSession: TicketingSession
 
-    @Throws(KeyplePluginInstantiationException::class, KeypleBaseException::class)
+    @Throws(KeyplePluginInstantiationException::class)
     fun init(observer: ObservableReader.ReaderObserver?) {
         Timber.d("Initialize SEProxy with Android Plugin")
         SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
@@ -62,8 +60,6 @@ class CardReaderApi @Inject constructor() {
         /* remove the observer if it already exist */
         (poReader as ObservableReader).addObserver(observer)
 
-        // val samResourceManager = SamResourceManagerFactory.instantiate(SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME), CalypsoInfo.SAM_C1_ATR_REGEX)
-        val samResourceManager = SamResourceManagerFactory.instantiate(SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME), "AndroidFamocoReader")
         samReader = SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME).getReader(AndroidFamocoReader.READER_NAME)
 
         ticketingSessionManager = TicketingSessionManager()
@@ -79,11 +75,7 @@ class CardReaderApi @Inject constructor() {
         * inserted.
         */
         ticketingSession.prepareAndSetPoDefaultSelection()
-//
-//
-//        (poReader as ObservableReader).setDefaultSelectionRequest(ticketingSession.selectionOperation,
-//            ObservableReader.NotificationMode.MATCHED_ONLY)
-//
+
         (poReader as ObservableReader).startSeDetection(ObservableReader.PollingMode.REPEATING)
     }
 

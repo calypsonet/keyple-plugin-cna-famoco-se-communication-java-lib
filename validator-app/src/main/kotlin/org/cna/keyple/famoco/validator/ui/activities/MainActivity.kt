@@ -37,7 +37,7 @@ class MainActivity : DaggerAppCompatActivity() {
         setSupportActionBar(myToolbar)
 
         // Set up fragment
-        val fragment = supportFragmentManager.findFragmentById(R.id.contentFrame)?: mInjectedFragment
+        val fragment = supportFragmentManager.findFragmentById(R.id.contentFrame) ?: mInjectedFragment
         addFragmentToActivity(supportFragmentManager, fragment, R.id.contentFrame)
     }
 }

@@ -11,11 +11,9 @@
  ********************************************************************************/
 package org.cna.keyple.famoco.validator.ticketing
 
-import org.eclipse.keyple.calypso.transaction.SamResource
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException
-import org.slf4j.LoggerFactory
 import timber.log.Timber
 
 class TicketingSessionManager(private val ticketingSessions: ArrayList<ITicketingSession> = ArrayList()) {

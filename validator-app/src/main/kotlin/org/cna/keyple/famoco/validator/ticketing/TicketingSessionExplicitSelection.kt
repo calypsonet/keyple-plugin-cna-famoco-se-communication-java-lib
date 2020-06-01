@@ -15,22 +15,22 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Arrays
 import java.util.Date
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
-import org.eclipse.keyple.calypso.exception.NoResourceAvailableException
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException
 import org.eclipse.keyple.calypso.transaction.PoResource
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
-import org.eclipse.keyple.calypso.transaction.PoSelector.PoAidSelector
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.calypso.transaction.SamResource
-import org.eclipse.keyple.calypso.transaction.SecuritySettings
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.selection.SelectionsResult
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.SeReader
+import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.SeSelector.AidSelector.IsoAid
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
+import timber.log.Timber
 
 class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader?) : AbstractTicketingSession(poReader, samReader), ITicketingSession {
     /**
@@ -44,43 +44,14 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader?
         seSelection = SeSelection()
 
         /* Select Calypso */
-        val poSelectionRequest = PoSelectionRequest(
-            PoSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                PoAidSelector(
-                    IsoAid(CalypsoInfo.AID),
-                    PoSelector.InvalidatedPo.REJECT
-                ),
-                "AID: ${CalypsoInfo.AID}"
-            )
-        )
+        val poSelectionRequest = PoSelectionRequest(PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                SeSelector.AidSelector(IsoAid(CalypsoInfo.AID)), PoSelector.InvalidatedPo.REJECT))
 
-        readEnvironmentHolderParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-            CalypsoInfo.SFI_EnvironmentAndHolder, ReadDataStructure.SINGLE_RECORD_DATA,
-            CalypsoInfo.RECORD_NUMBER_1, String.format(
-                "EnvironmentHolder (SFI=%02X))",
-                CalypsoInfo.SFI_EnvironmentAndHolder
-            )
-        )
-
-        readContractParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-            CalypsoInfo.SFI_Contracts,
-            ReadDataStructure.SINGLE_RECORD_DATA,
-            CalypsoInfo.RECORD_NUMBER_1,
-            String.format("Contracts#1 (SFI=%02X))", CalypsoInfo.SFI_Contracts)
-        )
-        readCounterParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-            CalypsoInfo.SFI_Counter,
-            ReadDataStructure.MULTIPLE_COUNTER,
-            CalypsoInfo.RECORD_NUMBER_1,
-            String.format("Counter (SFI=%02X))", CalypsoInfo.SFI_Counter)
-        )
-        readEventLogParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-            CalypsoInfo.SFI_EventLog,
-            ReadDataStructure.MULTIPLE_RECORD_DATA,
-            CalypsoInfo.RECORD_NUMBER_1,
-            String.format("EventLog (SFI=%02X))", CalypsoInfo.SFI_EventLog)
-        )
+        // Prepare the reading of the Environment and Holder file.
+        poSelectionRequest.prepareReadRecordFile(CalypsoInfo.SFI_EnvironmentAndHolder, CalypsoInfo.RECORD_NUMBER_1.toInt())
+        poSelectionRequest.prepareReadRecordFile(CalypsoInfo.SFI_Contracts, CalypsoInfo.RECORD_NUMBER_1.toInt())
+        poSelectionRequest.prepareReadRecordFile(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt())
+        poSelectionRequest.prepareReadRecordFile(CalypsoInfo.SFI_EventLog, CalypsoInfo.RECORD_NUMBER_1.toInt())
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)
@@ -106,48 +77,33 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader?
 
             /* No sucessful selection */
             if (!selectionsResult.hasActiveSelection()) {
-                logger.error("PO Not selected")
+                Timber.e("PO Not selected")
                 return ITicketingSession.STATUS_SESSION_ERROR
             }
 
             val poTransaction =
-                if(samReader != null)
-                    PoTransaction(PoResource(poReader, calypsoPo), checkSamAndOpenChannel(samReader), SecuritySettings())
+                if (samReader != null)
+                    PoTransaction(PoResource(poReader, calypsoPo), getSecuritySettings(checkSamAndOpenChannel(samReader)))
                 else
                     PoTransaction(PoResource(poReader, calypsoPo))
 
             if (!Arrays.equals(currentPoSN, calypsoPo.applicationSerialNumber)) {
-                logger.info("Load ticket status  : {}", "STATUS_CARD_SWITCHED")
+                Timber.i("Load ticket status  : STATUS_CARD_SWITCHED")
                 return ITicketingSession.STATUS_CARD_SWITCHED
             }
-            var poProcessStatus = false
 
             /*
              * Open a transaction to read/write the Calypso PO
-             */poProcessStatus = poTransaction.processOpening(
-                PoTransaction.ModificationMode.ATOMIC,
-                PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD,
-                0.toByte(),
-                0.toByte()
-            )
-            if (!poProcessStatus) {
-                logger.info("Load ticket status  : {}", "STATUS_SESSION_ERROR")
-                return ITicketingSession.STATUS_SESSION_ERROR
-            }
+             */
+            poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD)
 
             /*
              * Read actual ticket number
-             */poTransaction.prepareReadRecordsCmd(
-                CalypsoInfo.SFI_Counter,
-                ReadDataStructure.MULTIPLE_COUNTER,
-                CalypsoInfo.RECORD_NUMBER_1,
-                String.format("Counter (SFI=%02X))", CalypsoInfo.SFI_Counter)
-            )
+             */
+            poTransaction.prepareReadRecordFile(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt())
             poTransaction.processPoCommandsInSession()
-            poTransaction.prepareIncreaseCmd(
-                CalypsoInfo.SFI_Counter, 0x01.toByte(), ticketNumber,
-                "Increase $ticketNumber"
-            )
+
+            poTransaction.prepareIncrease(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1, ticketNumber)
 
             /*
              * Prepare record to be sent to Calypso PO log journal
@@ -160,27 +116,26 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader?
             } else {
                 pad("$dateTime T1", ' ', 29)
             }
-            poTransaction.prepareAppendRecordCmd(
-                CalypsoInfo.SFI_EventLog, event.toByteArray(),
-                "Event: $event"
-            )
+
+            poTransaction.prepareAppendRecord(CalypsoInfo.SFI_EventLog, event.toByteArray())
 
             /*
              * Process transaction
-             */poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
+             */
+            poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
 
-            /*
-             * End of transaction, that's it !! Only using high level Calypso Keyple API
-             */if (!poProcessStatus) {
-                logger.info("Load ticket status  : {}", ITicketingSession.STATUS_SESSION_ERROR)
-                return ITicketingSession.STATUS_SESSION_ERROR
-            }
-            logger.info("Load ticket status  : {}", ITicketingSession.STATUS_OK)
+            Timber.i("Load ticket status  : STATUS_OK")
             ITicketingSession.STATUS_OK
-        } catch (e: KeypleReaderException) {
+        } catch (e: CalypsoSamCommandException) {
             e.printStackTrace()
-            ITicketingSession.STATUS_UNKNOWN_ERROR
-        } catch (e: NoResourceAvailableException) {
+            ITicketingSession.STATUS_SESSION_ERROR
+        } catch (e: CalypsoPoCommandException) {
+            e.printStackTrace()
+            ITicketingSession.STATUS_SESSION_ERROR
+        } catch (e: CalypsoPoTransactionException) {
+            e.printStackTrace()
+            ITicketingSession.STATUS_SESSION_ERROR
+        } catch (e: KeypleReaderException) {
             e.printStackTrace()
             ITicketingSession.STATUS_UNKNOWN_ERROR
         }
