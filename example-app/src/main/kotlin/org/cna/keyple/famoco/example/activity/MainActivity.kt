@@ -42,10 +42,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPlugin
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPluginFactory
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
@@ -69,11 +67,11 @@ class MainActivity : AbstractExampleActivity() {
 
     override fun initReaders() {
         // Initialize SEProxy with Android Plugins
-        SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
-        SeProxyService.getInstance().registerPlugin(AndroidFamocoPluginFactory())
+        val nfcPlugin = SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
+        val samPlugin = SeProxyService.getInstance().registerPlugin(AndroidFamocoPluginFactory())
 
         // Configuration of AndroidNfc Reader
-        poReader = SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReader(AndroidNfcReader.READER_NAME) as AndroidNfcReader
+        poReader = nfcPlugin.getReader(AndroidNfcReader.READER_NAME) as AndroidNfcReader
         poReader.setParameter("FLAG_READER_RESET_STATE", "0")
         poReader.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "100")
         poReader.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS", "0")
@@ -86,8 +84,7 @@ class MainActivity : AbstractExampleActivity() {
 
         // Configuration for Sam Reader. Sam access provided by Famoco lib-secommunication
         // FIXME: Initialisation Delay to handler?
-        samReader = SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME).getReader(
-            AndroidFamocoReader.READER_NAME)
+        samReader = samPlugin.getReader(AndroidFamocoReader.READER_NAME)
     }
 
     override fun onResume() {

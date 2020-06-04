@@ -42,10 +42,10 @@ class CardReaderApi @Inject constructor() {
     @Throws(KeyplePluginInstantiationException::class)
     fun init(observer: ObservableReader.ReaderObserver?) {
         Timber.d("Initialize SEProxy with Android Plugin")
-        SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
-        SeProxyService.getInstance().registerPlugin(AndroidFamocoPluginFactory())
+        val nfcPlugin = SeProxyService.getInstance().registerPlugin(AndroidNfcPluginFactory())
+        val samPlugin = SeProxyService.getInstance().registerPlugin(AndroidFamocoPluginFactory())
         // define task as an observer for ReaderEvents
-        poReader = SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReader(AndroidNfcReader.READER_NAME)
+        poReader = nfcPlugin.getReader(AndroidNfcReader.READER_NAME)
         Timber.d("PO (NFC) reader name: ${poReader.name}")
 
         poReader.setParameter("FLAG_READER_RESET_STATE", "0")
@@ -60,7 +60,7 @@ class CardReaderApi @Inject constructor() {
         /* remove the observer if it already exist */
         (poReader as ObservableReader).addObserver(observer)
 
-        samReader = SeProxyService.getInstance().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME).getReader(AndroidFamocoReader.READER_NAME)
+        samReader = samPlugin.getReader(AndroidFamocoReader.READER_NAME)
 
         ticketingSessionManager = TicketingSessionManager()
 
