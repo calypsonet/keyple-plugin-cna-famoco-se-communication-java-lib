@@ -20,20 +20,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cna.keyple.famoco.example.R
 import org.cna.keyple.famoco.example.util.CalypsoClassicInfo
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars
-import org.eclipse.keyple.calypso.command.sam.SamRevision
+import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException
+import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
-import org.eclipse.keyple.calypso.transaction.CalypsoSam
 import org.eclipse.keyple.calypso.transaction.PoResource
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.calypso.transaction.SamResource
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest
-import org.eclipse.keyple.calypso.transaction.SamSelector
-import org.eclipse.keyple.calypso.transaction.SecuritySettings
+import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException
 import org.eclipse.keyple.core.selection.SeSelection
+import org.eclipse.keyple.core.selection.SelectionsResult
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeProxyService
@@ -42,7 +38,6 @@ import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
-import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
@@ -61,9 +56,6 @@ class MainActivity : AbstractExampleActivity() {
     private lateinit var poReader: AndroidNfcReader
     private lateinit var samReader: SeReader
     private lateinit var seSelection: SeSelection
-    private var readEnvironmentParserIndex: Int = 0
-
-    private val securitySettings = SecuritySettings()
 
     private enum class TransactionType {
         DECREASE,
@@ -72,7 +64,7 @@ class MainActivity : AbstractExampleActivity() {
 
     override fun initContentView() {
         setContentView(R.layout.activity_main)
-        initActionBar(toolbar, "Keyple demo", "Famoco Plugin")
+        initActionBar(toolbar, "Keyple demo", "Famoco Plugin 2")
     }
 
     override fun initReaders() {
@@ -173,22 +165,12 @@ class MainActivity : AbstractExampleActivity() {
             seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
             /* Calypso selection: configures a PoSelector with all the desired attributes to make the selection and read additional information afterwards */
-            val poSelector = PoSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                PoSelector.PoAidSelector(
-                    SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                    PoSelector.InvalidatedPo.REJECT),
-                "AID: " + CalypsoClassicInfo.AID)
-
-            val poSelectionRequest = PoSelectionRequest(poSelector)
+            val poSelectionRequest = PoSelectionRequest(PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)), PoSelector.InvalidatedPo.REJECT))
 
             /* Prepare the reading order and keep the associated parser for later use once the
              selection has been made. */
-            readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-                CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
-                String.format("EnvironmentAndHolder (SFI=%02X))",
-                    CalypsoClassicInfo.SFI_EnvironmentAndHolder))
+            poSelectionRequest.prepareReadRecordFile(CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
 
             /*
              * Add the selection case to the current selection (we could have added other cases
@@ -234,9 +216,18 @@ class MainActivity : AbstractExampleActivity() {
             // notify reader that se detection has been launched
             poReader.startSeDetection(ObservableReader.PollingMode.REPEATING)
             addActionEvent("Waiting for PO presentation")
-        } catch (e: KeypleBaseException) {
+        } catch (e: KeypleReaderException) {
             Timber.e(e)
-            addResultEvent("Error : ${e.message}")
+            addResultEvent("Exception: ${e.message}")
+        } catch (e: CalypsoPoTransactionException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
+        } catch (e: CalypsoPoCommandException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
+        } catch (e: CalypsoSamCommandException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
         }
     }
 
@@ -258,17 +249,15 @@ class MainActivity : AbstractExampleActivity() {
 
             if (selectionsResult.hasActiveSelection()) {
                 addResultEvent("Selection successful")
-                val calypsoPo = selectionsResult.activeSelection.matchingSe as CalypsoPo
+                val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
 
                 /*
                  * Retrieve the data read from the parser updated during the selection process
                  */
+                val efEnvironmentHolder = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EnvironmentAndHolder)
                 addActionEvent("Read environment and holder data")
-                val readEnvironmentParser = selectionsResult
-                    .activeSelection.getResponseParser(readEnvironmentParserIndex) as ReadRecordsRespPars
 
-                val environmentAndHolder = readEnvironmentParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
-                addResultEvent("Environment and Holder file: ${ByteArrayUtil.toHex(environmentAndHolder)}")
+                addResultEvent("Environment and Holder file: ${ByteArrayUtil.toHex(efEnvironmentHolder.data.content)}")
 
                 addHeaderEvent("2nd PO exchange: read the event log file")
 
@@ -276,7 +265,7 @@ class MainActivity : AbstractExampleActivity() {
                     samReader.setParameter(AndroidFamocoReader.FLAG_READER_RESET_STATE, "")
                     addActionEvent("Init Sam and open channel")
                     val samResource = checkSamAndOpenChannel(samReader)
-                    PoTransaction(PoResource(poReader, calypsoPo), samResource, securitySettings)
+                    PoTransaction(PoResource(poReader, calypsoPo), getSecuritySettings(samResource))
                 } else {
                     PoTransaction(PoResource(poReader, calypsoPo))
                 }
@@ -285,19 +274,9 @@ class MainActivity : AbstractExampleActivity() {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                val readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
-                    CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                    CalypsoClassicInfo.RECORD_NUMBER_1,
-                    String.format("EventLog (SFI=%02X, recnbr=%d))",
-                        CalypsoClassicInfo.SFI_EventLog,
-                        CalypsoClassicInfo.RECORD_NUMBER_1))
+                poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
 
-                val readCounterParserIndex = poTransaction.prepareReadRecordsCmd(
-                    CalypsoClassicInfo.SFI_Counter1, ReadDataStructure.SINGLE_COUNTER,
-                    CalypsoClassicInfo.RECORD_NUMBER_1,
-                    String.format("Counter (SFI=%02X, recnbr=%d))",
-                        CalypsoClassicInfo.SFI_Counter1,
-                        CalypsoClassicInfo.RECORD_NUMBER_1))
+                poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
 
                 /*
                  * Actual PO communication: send the prepared read order, then close the channel
@@ -307,34 +286,22 @@ class MainActivity : AbstractExampleActivity() {
 
                 if (withSam) {
                     addActionEvent("Process PO Opening session for transactions")
-                    var poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC, PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, 0, 0)
-                    if (!poProcessStatus) {
-                        addResultEvent("Error processingOpening failure.")
-                        throw IllegalStateException("processingOpening failure.")
-                    }
+                    poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD)
                     addResultEvent("Opening session: SUCCESS")
-                    val counter = readCounter(poTransaction, readCounterParserIndex)
-                    val eventLog = ByteArrayUtil.toHex(readEventLog(poTransaction, readEventLogParserIndex))
+                    val counter = readCounter(selectionsResult)
+                    val eventLog = ByteArrayUtil.toHex(readEventLog(selectionsResult))
 
                     addActionEvent("Process PO Closing session")
-                    poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
-                    if (!poProcessStatus) {
-                        addResultEvent("Error processClosing failure.")
-                        throw IllegalStateException("processClosing failure.")
-                    }
+                    poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
                     addResultEvent("Closing session: SUCCESS")
 
                     // In secured reading, value read elements can only be trusted if the session is closed without error.
                     addResultEvent("Counter value: $counter")
                     addResultEvent("EventLog file: $eventLog")
                 } else {
-                    val poProcessStatus = poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)
-                    if (!poProcessStatus) {
-                        addResultEvent("Error reading failure.")
-                        throw IllegalStateException("processPoCommands failure.")
-                    }
-                    addResultEvent("Counter value: ${readCounter(poTransaction, readCounterParserIndex)}")
-                    addResultEvent("EventLog file: ${ByteArrayUtil.toHex(readEventLog(poTransaction, readEventLogParserIndex))}")
+                    poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)
+                    addResultEvent("Counter value: ${readCounter(selectionsResult)}")
+                    addResultEvent("EventLog file: ${ByteArrayUtil.toHex(readEventLog(selectionsResult))}")
                 }
 
                 addResultEvent("End of the Calypso PO processing.")
@@ -345,22 +312,28 @@ class MainActivity : AbstractExampleActivity() {
         } catch (e: KeypleReaderException) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
-        } catch (e: Exception) {
+        } catch (e: CalypsoPoTransactionException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
+        } catch (e: CalypsoPoCommandException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
+        } catch (e: CalypsoSamCommandException) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
         }
     }
 
-    private fun readCounter(poTransaction: PoTransaction, readCounterParserIndex: Int): Int? {
-        val readCounterParser = poTransaction
-            .getResponseParser(readCounterParserIndex) as ReadRecordsRespPars
-        return readCounterParser.counters[1]
+    private fun readCounter(selectionsResult: SelectionsResult): Int? {
+        val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
+        val efCounter1 = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_Counter1)
+        return efCounter1.data.getContentAsCounterValue(CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
     }
 
-    private fun readEventLog(poTransaction: PoTransaction, readEventLogParserIndex: Int): ByteArray? {
-        val readEventLogParser = poTransaction
-            .getResponseParser(readEventLogParserIndex) as ReadRecordsRespPars
-        return readEventLogParser.records[CalypsoClassicInfo.RECORD_NUMBER_1.toInt()]
+    private fun readEventLog(selectionsResult: SelectionsResult): ByteArray? {
+        val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
+        val efCounter1 = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog)
+        return efCounter1.data.content
     }
 
     private fun runPoReadWriteIncreaseTransaction(selectionsResponse: AbstractDefaultSelectionsResponse) {
@@ -385,46 +358,45 @@ class MainActivity : AbstractExampleActivity() {
 
             if (selectionsResult.hasActiveSelection()) {
                 addResultEvent("Calypso PO selection: SUCCESS")
-                val calypsoPo = selectionsResult.activeSelection.matchingSe as CalypsoPo
+                val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
                 addResultEvent("AID: ${ByteArrayUtil.fromHex(CalypsoClassicInfo.AID)}")
 
-                val poTransaction = PoTransaction(PoResource(poReader, calypsoPo), samResource, securitySettings)
-
-                /*
-                * Open Session for the debit key
-                */
-                addActionEvent("Process PO Opening session for transactions")
-                var poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC, PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, 0, 0)
-                if (!poProcessStatus) {
-                    addResultEvent("Error processingOpening failure.")
-                    throw IllegalStateException("processingOpening failure.")
-                }
-                addResultEvent("Opening session: SUCCESS")
+                val poTransaction = PoTransaction(PoResource(poReader, calypsoPo), getSecuritySettings(samResource))
 
                 when (transactionType) {
                     TransactionType.INCREASE -> {
-                        poTransaction.prepareIncreaseCmd(CalypsoClassicInfo.SFI_Counter1, 0x01, 10, "Increase Counter")
+                        /*
+                        * Open Session for the debit key
+                        */
+                        addActionEvent("Process PO Opening session for transactions")
+                        poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD)
+                        addResultEvent("Opening session: SUCCESS")
+
+                        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
+                        poTransaction.processPoCommandsInSession()
+
+                        poTransaction.prepareIncrease(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1, 10)
                         addActionEvent("Process PO increase counter by 10")
-                        poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
-                        if (!poProcessStatus) {
-                            addResultEvent("Error: Increasing failure.")
-                            throw IllegalStateException("Increasing failure.")
-                        }
+                        poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
                         addResultEvent("Increase by 10: SUCCESS")
                     }
                     TransactionType.DECREASE -> {
                         /*
+                        * Open Session for the debit key
+                        */
+                        addActionEvent("Process PO Opening session for transactions")
+                        poTransaction.processOpening(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT)
+                        addResultEvent("Opening session: SUCCESS")
+
+                        poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
+                        poTransaction.processPoCommandsInSession()
+
+                        /*
                              * A ratification command will be sent (CONTACTLESS_MODE).
                              */
-                        poTransaction.prepareDecreaseCmd(CalypsoClassicInfo.SFI_Counter1, 1,
-                            1, "Decrease Counter")
+                        poTransaction.prepareDecrease(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1, 1)
                         addActionEvent("Process PO decreasing counter and close transaction")
-                        poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
-
-                        if (!poProcessStatus) {
-                            addResultEvent("Error processClosing failure.")
-                            throw IllegalStateException("processClosing failure.")
-                        }
+                        poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
                         addResultEvent("Decrease by 1: SUCCESS")
                     }
                 }
@@ -437,39 +409,18 @@ class MainActivity : AbstractExampleActivity() {
         } catch (e: KeypleReaderException) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
-        } catch (e: Exception) {
+        } catch (e: KeypleReaderException) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
-        }
-    }
-
-    @Throws(KeypleReaderException::class, IllegalStateException::class)
-    private fun checkSamAndOpenChannel(samReader: SeReader): SamResource {
-        /*
-         * check the availability of the SAM doing a ATR based selection, open its physical and
-         * logical channels and keep it open
-         */
-        val samSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
-
-        val samSelector = SamSelector(SamRevision.C1, null, "Sam Selector")
-
-        samSelection.prepareSelection(SamSelectionRequest(samSelector))
-
-        return try {
-            if (samReader.isSePresent) {
-                val calypsoSam = samSelection.processExplicitSelection(samReader).activeSelection.matchingSe as CalypsoSam
-                if (!calypsoSam.isSelected) {
-                    addResultEvent("Error: Unable to open a logical channel for SAM!")
-                    throw IllegalStateException("Unable to open a logical channel for SAM!")
-                }
-                SamResource(samReader, calypsoSam)
-            } else {
-                addResultEvent("Error: Sam is not present in the reader")
-                throw IllegalStateException("Sam is not present in the reader")
-            }
-        } catch (e: KeypleReaderException) {
-            addResultEvent("Error: Reader exception ${e.message}")
-            throw IllegalStateException("Reader exception: " + e.message)
+        } catch (e: CalypsoPoTransactionException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
+        } catch (e: CalypsoPoCommandException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
+        } catch (e: CalypsoSamCommandException) {
+            Timber.e(e)
+            addResultEvent("Exception: ${e.message}")
         }
     }
 }

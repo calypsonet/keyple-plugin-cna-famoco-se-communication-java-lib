@@ -31,8 +31,20 @@ import org.cna.keyple.famoco.example.R
 import org.cna.keyple.famoco.example.adapter.EventAdapter
 import org.cna.keyple.famoco.example.model.ChoiceEventModel
 import org.cna.keyple.famoco.example.model.EventModel
+import org.eclipse.keyple.calypso.command.sam.SamRevision
+import org.eclipse.keyple.calypso.transaction.CalypsoSam
+import org.eclipse.keyple.calypso.transaction.PoSecuritySettings
+import org.eclipse.keyple.calypso.transaction.PoTransaction
+import org.eclipse.keyple.calypso.transaction.SamResource
+import org.eclipse.keyple.calypso.transaction.SamSelectionRequest
+import org.eclipse.keyple.calypso.transaction.SamSelector
+import org.eclipse.keyple.core.selection.SeSelection
+import org.eclipse.keyple.core.seproxy.ChannelControl
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
+import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
 import timber.log.Timber
 
 abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ObservableReader.ReaderObserver {
@@ -131,4 +143,62 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
     }
     abstract fun initContentView()
     abstract fun initReaders()
+
+    @Throws(KeypleReaderException::class, IllegalStateException::class)
+    protected fun checkSamAndOpenChannel(samReader: SeReader): SamResource {
+        /*
+         * check the availability of the SAM doing a ATR based selection, open its physical and
+         * logical channels and keep it open
+         */
+        val samSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+
+        val samSelector = SamSelector(SamRevision.C1, null)
+
+        samSelection.prepareSelection(SamSelectionRequest(samSelector))
+
+        return try {
+            if (samReader.isSePresent) {
+                val calypsoSam = samSelection.processExplicitSelection(samReader).activeMatchingSe as CalypsoSam
+                SamResource(samReader, calypsoSam)
+            } else {
+                addResultEvent("Error: Sam is not present in the reader")
+                throw IllegalStateException("Sam is not present in the reader")
+            }
+        } catch (e: KeypleReaderException) {
+            addResultEvent("Error: Reader exception ${e.message}")
+            throw IllegalStateException("Reader exception: " + e.message)
+        }
+    }
+
+    protected fun getSecuritySettings(samResource: SamResource?): PoSecuritySettings? {
+
+        // The default KIF values for personalization, loading and debiting
+        val DEFAULT_KIF_PERSO = 0x21.toByte()
+        val DEFAULT_KIF_LOAD = 0x27.toByte()
+        val DEFAULT_KIF_DEBIT = 0x30.toByte()
+        // The default key record number values for personalization, loading and debiting
+        // The actual value should be adjusted.
+        val DEFAULT_KEY_RECORD_NUMBER_PERSO = 0x01.toByte()
+        val DEFAULT_KEY_RECORD_NUMBER_LOAD = 0x02.toByte()
+        val DEFAULT_KEY_RECORD_NUMBER_DEBIT = 0x03.toByte()
+
+        /* define the security parameters to provide when creating PoTransaction */
+        return PoSecuritySettings.PoSecuritySettingsBuilder(samResource) //
+            .sessionDefaultKif(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO, DEFAULT_KIF_PERSO) //
+            .sessionDefaultKif(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD, DEFAULT_KIF_LOAD) //
+            .sessionDefaultKif(PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT, DEFAULT_KIF_DEBIT) //
+            .sessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_PERSO,
+                DEFAULT_KEY_RECORD_NUMBER_PERSO
+            ) //
+            .sessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_LOAD,
+                DEFAULT_KEY_RECORD_NUMBER_LOAD
+            ) //
+            .sessionDefaultKeyRecordNumber(
+                PoTransaction.SessionSetting.AccessLevel.SESSION_LVL_DEBIT,
+                DEFAULT_KEY_RECORD_NUMBER_DEBIT
+            )
+            .build()
+    }
 }
