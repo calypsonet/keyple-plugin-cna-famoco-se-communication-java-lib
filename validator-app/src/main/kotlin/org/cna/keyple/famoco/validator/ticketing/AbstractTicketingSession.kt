@@ -18,9 +18,9 @@ import org.eclipse.keyple.calypso.transaction.ElementaryFile
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings.PoSecuritySettingsBuilder
 import org.eclipse.keyple.calypso.transaction.PoTransaction.SessionSetting.AccessLevel
-import org.eclipse.keyple.calypso.transaction.SamResource
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest
 import org.eclipse.keyple.calypso.transaction.SamSelector
+import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.selection.SelectionsResult
 import org.eclipse.keyple.core.seproxy.ChannelControl
@@ -28,7 +28,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
 import timber.log.Timber
 
@@ -71,7 +70,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
     }
 
     val poIdentification: String
-        get() = (ByteArrayUtil.toHex(calypsoPo.applicationSerialNumber) + ", " +
+        get() = (calypsoPo.applicationSerialNumber + ", " +
                 calypsoPo.revision.toString())
 
     /**
@@ -82,7 +81,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
     fun analyzePoProfile(): Boolean {
         var status = false
         if (calypsoPo.startupInfo != null) {
-            currentPoSN = calypsoPo.applicationSerialNumber
+            currentPoSN = calypsoPo.applicationSerialNumberBytes
             cardContent.serialNumber = currentPoSN
             cardContent.poRevision = calypsoPo.revision.toString()
             cardContent.environment = efEnvironmentHolder.data.allRecordsContent
@@ -99,7 +98,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
     }
 
     @Throws(KeypleReaderException::class, IllegalStateException::class)
-    protected fun checkSamAndOpenChannel(samReader: SeReader): SamResource {
+    protected fun checkSamAndOpenChannel(samReader: SeReader): SeResource<CalypsoSam> {
         samReader.setParameter(AndroidFamocoReader.FLAG_READER_RESET_STATE, "")
         /*
          * check the availability of the SAM doing a ATR based selection, open its physical and
@@ -107,7 +106,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
          */
         val samSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-        val samSelector = SamSelector(SamRevision.C1, null)
+        val samSelector = SamSelector.builder().samRevision(SamRevision.C1).build()
 
         samSelection.prepareSelection(SamSelectionRequest(samSelector))
 
@@ -116,7 +115,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
                 val selectionResult = samSelection.processExplicitSelection(samReader)
                 if (selectionResult.hasActiveSelection()) {
                     val calypsoSam = selectionResult.activeMatchingSe as CalypsoSam
-                    SamResource(samReader, calypsoSam)
+                    SeResource(samReader, calypsoSam)
                 } else {
                     throw IllegalStateException("Sam selection failed")
                 }
@@ -128,7 +127,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
         }
     }
 
-    open fun getSecuritySettings(samResource: SamResource?): PoSecuritySettings? {
+    open fun getSecuritySettings(samResource: SeResource<CalypsoSam>?): PoSecuritySettings? {
 
         // The default KIF values for personalization, loading and debiting
         val DEFAULT_KIF_PERSO = 0x21.toByte()

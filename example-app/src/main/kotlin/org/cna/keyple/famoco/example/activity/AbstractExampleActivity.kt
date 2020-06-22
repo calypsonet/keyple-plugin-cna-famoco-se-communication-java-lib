@@ -35,9 +35,9 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision
 import org.eclipse.keyple.calypso.transaction.CalypsoSam
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.calypso.transaction.SamResource
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest
 import org.eclipse.keyple.calypso.transaction.SamSelector
+import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
@@ -145,21 +145,21 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
     abstract fun initReaders()
 
     @Throws(KeypleReaderException::class, IllegalStateException::class)
-    protected fun checkSamAndOpenChannel(samReader: SeReader): SamResource {
+    protected fun checkSamAndOpenChannel(samReader: SeReader): SeResource<CalypsoSam> {
         /*
          * check the availability of the SAM doing a ATR based selection, open its physical and
          * logical channels and keep it open
          */
         val samSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-        val samSelector = SamSelector(SamRevision.C1, null)
+        val samSelector = SamSelector.builder().samRevision(SamRevision.C1).build()
 
         samSelection.prepareSelection(SamSelectionRequest(samSelector))
 
         return try {
             if (samReader.isSePresent) {
                 val calypsoSam = samSelection.processExplicitSelection(samReader).activeMatchingSe as CalypsoSam
-                SamResource(samReader, calypsoSam)
+                SeResource<CalypsoSam>(samReader, calypsoSam)
             } else {
                 addResultEvent("Error: Sam is not present in the reader")
                 throw IllegalStateException("Sam is not present in the reader")
@@ -170,7 +170,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         }
     }
 
-    protected fun getSecuritySettings(samResource: SamResource?): PoSecuritySettings? {
+    protected fun getSecuritySettings(samResource: SeResource<CalypsoSam>?): PoSecuritySettings? {
 
         // The default KIF values for personalization, loading and debiting
         val DEFAULT_KIF_PERSO = 0x21.toByte()

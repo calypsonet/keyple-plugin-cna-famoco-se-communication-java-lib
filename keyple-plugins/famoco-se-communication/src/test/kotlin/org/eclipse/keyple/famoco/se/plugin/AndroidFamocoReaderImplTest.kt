@@ -39,7 +39,7 @@ internal class AndroidFamocoReaderImplTest {
         nativeReader = mockReader()
 
         // instantiate reader with nativeReader
-        reader = AndroidFamocoReader
+        reader = AndroidFamocoReaderImpl
     }
 
     @After

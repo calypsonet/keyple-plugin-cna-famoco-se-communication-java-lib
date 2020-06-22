@@ -12,8 +12,8 @@
 package org.eclipse.keyple.famoco.se.plugin
 
 import java.util.HashMap
-import java.util.SortedSet
-import java.util.TreeSet
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
 import timber.log.Timber
@@ -32,11 +32,11 @@ internal object AndroidFamocoPluginImpl : AbstractPlugin(AndroidFamocoPlugin.PLU
         parameters[key] = value
     }
 
-    override fun initNativeReaders(): SortedSet<SeReader> {
+    override fun initNativeReaders(): ConcurrentMap<String, SeReader>? {
         Timber.d("InitNativeReader() add the unique instance of AndroidFamocoReader")
 
-        val readers = TreeSet<SeReader>()
-        readers.add(AndroidFamocoReaderImpl)
+        val readers = ConcurrentHashMap<String, SeReader>()
+        readers[AndroidFamocoPluginImpl.name] = AndroidFamocoReaderImpl
         return readers
     }
 }

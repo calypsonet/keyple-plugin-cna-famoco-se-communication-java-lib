@@ -23,11 +23,11 @@ import org.cna.keyple.famoco.example.util.CalypsoClassicInfo
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
-import org.eclipse.keyple.calypso.transaction.PoResource
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException
+import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.selection.SelectionsResult
 import org.eclipse.keyple.core.seproxy.ChannelControl
@@ -162,8 +162,10 @@ class MainActivity : AbstractExampleActivity() {
             seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
             /* Calypso selection: configures a PoSelector with all the desired attributes to make the selection and read additional information afterwards */
-            val poSelectionRequest = PoSelectionRequest(PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                SeSelector.AidSelector(SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID)), PoSelector.InvalidatedPo.REJECT))
+            val poSelectionRequest = PoSelectionRequest(PoSelector.builder()
+                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .aidSelector(SeSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
+                .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
 
             /* Prepare the reading order and keep the associated parser for later use once the
              selection has been made. */
@@ -262,9 +264,9 @@ class MainActivity : AbstractExampleActivity() {
                     samReader.setParameter(AndroidFamocoReader.FLAG_READER_RESET_STATE, "")
                     addActionEvent("Init Sam and open channel")
                     val samResource = checkSamAndOpenChannel(samReader)
-                    PoTransaction(PoResource(poReader, calypsoPo), getSecuritySettings(samResource))
+                    PoTransaction(SeResource(poReader, calypsoPo), getSecuritySettings(samResource))
                 } else {
-                    PoTransaction(PoResource(poReader, calypsoPo))
+                    PoTransaction(SeResource(poReader, calypsoPo))
                 }
 
                 /*
@@ -358,7 +360,7 @@ class MainActivity : AbstractExampleActivity() {
                 val calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
                 addResultEvent("AID: ${ByteArrayUtil.fromHex(CalypsoClassicInfo.AID)}")
 
-                val poTransaction = PoTransaction(PoResource(poReader, calypsoPo), getSecuritySettings(samResource))
+                val poTransaction = PoTransaction(SeResource(poReader, calypsoPo), getSecuritySettings(samResource))
 
                 when (transactionType) {
                     TransactionType.INCREASE -> {
@@ -372,7 +374,7 @@ class MainActivity : AbstractExampleActivity() {
                         poTransaction.prepareReadRecordFile(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
                         poTransaction.processPoCommandsInSession()
 
-                        poTransaction.prepareIncrease(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1, 10)
+                        poTransaction.prepareIncreaseCounter(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1.toInt(), 10)
                         addActionEvent("Process PO increase counter by 10")
                         poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
                         addResultEvent("Increase by 10: SUCCESS")
@@ -391,7 +393,7 @@ class MainActivity : AbstractExampleActivity() {
                         /*
                              * A ratification command will be sent (CONTACTLESS_MODE).
                              */
-                        poTransaction.prepareDecrease(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1, 1)
+                        poTransaction.prepareDecreaseCounter(CalypsoClassicInfo.SFI_Counter1, CalypsoClassicInfo.RECORD_NUMBER_1.toInt(), 1)
                         addActionEvent("Process PO decreasing counter and close transaction")
                         poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
                         addResultEvent("Decrease by 1: SUCCESS")
