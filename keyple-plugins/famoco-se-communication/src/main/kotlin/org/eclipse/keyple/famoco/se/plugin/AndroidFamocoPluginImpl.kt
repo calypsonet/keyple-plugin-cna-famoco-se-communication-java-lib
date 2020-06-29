@@ -36,7 +36,7 @@ internal object AndroidFamocoPluginImpl : AbstractPlugin(AndroidFamocoPlugin.PLU
         Timber.d("InitNativeReader() add the unique instance of AndroidFamocoReader")
 
         val readers = ConcurrentHashMap<String, SeReader>()
-        readers[AndroidFamocoPluginImpl.name] = AndroidFamocoReaderImpl
+        readers[AndroidFamocoReaderImpl.name] = AndroidFamocoReaderImpl
         return readers
     }
 }

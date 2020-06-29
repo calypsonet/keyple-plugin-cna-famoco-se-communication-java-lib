@@ -25,7 +25,6 @@ import timber.log.Timber
 
 internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READER_NAME), AndroidFamocoReader {
 
-    // FIXME: Utile??
     private val parameters: MutableMap<String, String> = HashMap()
 
     private val mSmarcardReader: SmartcardReader = SmartcardReader.getInstance()
@@ -41,7 +40,7 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
     }
 
     override fun getTransmissionMode(): TransmissionMode {
-        return TransmissionMode.CONTACTLESS
+        return TransmissionMode.CONTACTS
     }
 
     override fun getParameters(): MutableMap<String, String> {

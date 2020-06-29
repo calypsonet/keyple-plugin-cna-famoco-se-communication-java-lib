@@ -28,6 +28,7 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
 import timber.log.Timber
 
@@ -106,7 +107,7 @@ abstract class AbstractTicketingSession protected constructor(val poReader: SeRe
          */
         val samSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-        val samSelector = SamSelector.builder().samRevision(SamRevision.C1).build()
+        val samSelector = SamSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3).samRevision(SamRevision.C1).build()
 
         samSelection.prepareSelection(SamSelectionRequest(samSelector))
 

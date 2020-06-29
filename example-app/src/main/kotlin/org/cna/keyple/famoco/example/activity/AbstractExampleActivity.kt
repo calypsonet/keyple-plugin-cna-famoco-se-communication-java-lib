@@ -45,6 +45,7 @@ import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import timber.log.Timber
 
 abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ObservableReader.ReaderObserver {
@@ -152,7 +153,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
          */
         val samSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
 
-        val samSelector = SamSelector.builder().samRevision(SamRevision.C1).build()
+        val samSelector = SamSelector.builder().seProtocol(SeCommonProtocols.PROTOCOL_ISO7816_3).samRevision(SamRevision.C1).build()
 
         samSelection.prepareSelection(SamSelectionRequest(samSelector))
 

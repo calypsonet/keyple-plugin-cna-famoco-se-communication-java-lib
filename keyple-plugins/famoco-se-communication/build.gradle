@@ -103,8 +103,8 @@ artifacts {
 
 task installPlugin{
     group 'keyple'
-    description 'Builds and installs the keyple Android NFC plugin library into maven local repository'
-    dependsOn ':keyple-plugin:keyple-plugin-android-nfc:uploadArchives'
+    description 'Builds and installs the keyple Famoco SE Communication library into maven local repository'
+    dependsOn ':keyple-plugins:famoco-se-communication:uploadArchives'
 }
 
 dependencies {
