@@ -22,10 +22,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstantiationException
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPlugin
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPluginFactory
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings.getSetting
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
