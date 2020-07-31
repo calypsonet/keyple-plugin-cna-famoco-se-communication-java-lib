@@ -50,7 +50,7 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
 
     override fun setParameter(key: String, value: String) {
         if (key == AndroidFamocoReader.FLAG_READER_RESET_STATE) {
-            closePhysicalChannel()
+            closeLogicalAndPhysicalChannels()
         }
         Timber.w("No parameters are supported by AndroidFamocoReader")
         parameters[key] = value
