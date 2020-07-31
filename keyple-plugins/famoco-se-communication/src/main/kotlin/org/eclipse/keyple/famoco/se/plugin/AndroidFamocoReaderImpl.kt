@@ -13,8 +13,8 @@ package org.eclipse.keyple.famoco.se.plugin
 
 import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
+import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader
 import java.util.HashMap
-import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
@@ -50,7 +50,7 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
 
     override fun setParameter(key: String, value: String) {
         if (key == AndroidFamocoReader.FLAG_READER_RESET_STATE) {
-            closeLogicalAndPhysicalChannels()
+            closePhysicalChannel()
         }
         Timber.w("No parameters are supported by AndroidFamocoReader")
         parameters[key] = value

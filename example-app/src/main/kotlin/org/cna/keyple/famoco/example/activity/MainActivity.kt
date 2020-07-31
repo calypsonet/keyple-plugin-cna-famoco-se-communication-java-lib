@@ -308,6 +308,9 @@ class MainActivity : AbstractExampleActivity() {
             } else {
                 addResultEvent("The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
             }
+        } catch (e: IllegalStateException) {
+            Timber.e(e)
+            addResultEvent("Illegal State Exception: ${e.message}")
         } catch (e: KeypleReaderException) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
@@ -405,7 +408,10 @@ class MainActivity : AbstractExampleActivity() {
             } else {
                 addResultEvent("The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.")
             }
-        } catch (e: KeypleReaderException) {
+        } catch (e: IllegalStateException) {
+            Timber.e(e)
+            addResultEvent("Illegal State Exception: ${e.message}")
+        }catch (e: KeypleReaderException) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
         } catch (e: KeypleReaderException) {
