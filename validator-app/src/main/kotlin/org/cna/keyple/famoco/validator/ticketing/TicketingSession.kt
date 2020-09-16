@@ -28,7 +28,6 @@ import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest
 import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.selection.SelectionsResult
-import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
@@ -62,7 +61,7 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
         /*
          * Prepare a PO selection
          */
-        seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN)
+        seSelection = SeSelection(MultiSeRequestProcessing.FIRST_MATCH)
 
         /* Select Calypso */
         val poSelectionRequest = PoSelectionRequest(PoSelector.builder()
@@ -186,7 +185,7 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
             val dateTime = dateFormat.format(Date())
             poTransaction.prepareAppendRecord(CalypsoInfo.SFI_EventLog, pad("$dateTime OP = PERSO", ' ', 29).toByteArray())
             poTransaction.prepareUpdateRecord(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt(), ByteArrayUtil.fromHex(pad("", '0', 29 * 2)))
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
+            seSelection.prepareReleaseSeChannel()
             return true
         } catch (e: CalypsoPoTransactionException) {
             Timber.e(e)
@@ -233,7 +232,7 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
              * Read actual ticket number
              */
             poTransaction.prepareReadRecordFile(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt())
-            poTransaction.processPoCommandsInSession()
+            poTransaction.processPoCommands()
             poTransaction.prepareIncreaseCounter(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt(), ticketNumber)
 
             /*
@@ -252,7 +251,7 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
             /*
              * Process transaction
              */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
+            seSelection.prepareReleaseSeChannel()
             Timber.i("Load ticket status  : STATUS_OK")
             ITicketingSession.STATUS_OK
         } catch (e: CalypsoSamCommandException) {
@@ -284,19 +283,21 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
 
             /* allow to determine the anticipated response */
             poTransaction.prepareReadRecordFile(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt())
-            poTransaction.processPoCommandsInSession()
+            poTransaction.processPoCommands()
 
             /*
              * Prepare decrease command
              */
             poTransaction.prepareDecreaseCounter(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt(), 1)
 
-            /*
-             * Process transaction
-             */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
+            //seSelection.prepareReleaseSeChannel()
 
-            Timber.i("Load ticket status  : STATUS_OK")
+            /*
+            * Process transaction
+             */
+            poTransaction.processClosing()
+
+            Timber.i("Debit ticket status  : STATUS_OK")
             ITicketingSession.STATUS_OK
         } catch (e: CalypsoSamCommandException) {
             Timber.e(e)
@@ -333,7 +334,7 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
 
             /* allow to determine the anticipated response */
             poTransaction.prepareReadRecordFile(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt())
-            poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)
+            poTransaction.processPoCommands()
             poTransaction.prepareUpdateRecord(CalypsoInfo.SFI_Contracts, CalypsoInfo.RECORD_NUMBER_1.toInt(), pad("1 MONTH SEASON TICKET", ' ', 29).toByteArray())
 
             // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("");
@@ -342,7 +343,7 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
             val event =
                 pad(dateFormat.format(Date()) + " OP = +ST", ' ', 29)
             poTransaction.prepareAppendRecord(CalypsoInfo.SFI_EventLog, event.toByteArray())
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
+            poTransaction.processClosing()
             ITicketingSession.STATUS_OK
         } catch (e: CalypsoSamCommandException) {
             Timber.e(e)
@@ -362,7 +363,7 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
     inner class GenericSeSelectionRequest(seSelector: SeSelector) : AbstractSeSelectionRequest<AbstractApduCommandBuilder>(seSelector) {
         private val transmissionMode = seSelector.seProtocol.transmissionMode
         override fun parse(seResponse: SeResponse): AbstractMatchingSe {
-            class GenericMatchingSe(selectionResponse: SeResponse?, transmissionMode: TransmissionMode?) : AbstractMatchingSe(selectionResponse, transmissionMode)
+            class GenericMatchingSe(selectionResponse: SeResponse?, transmissionMode: TransmissionMode?) : AbstractMatchingSe(selectionResponse)
             return GenericMatchingSe(seResponse, transmissionMode)
         }
     }

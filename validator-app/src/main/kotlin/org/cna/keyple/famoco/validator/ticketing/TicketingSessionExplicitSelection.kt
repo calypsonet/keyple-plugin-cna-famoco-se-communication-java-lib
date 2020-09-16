@@ -24,7 +24,6 @@ import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionExce
 import org.eclipse.keyple.core.selection.SeResource
 import org.eclipse.keyple.core.selection.SeSelection
 import org.eclipse.keyple.core.selection.SelectionsResult
-import org.eclipse.keyple.core.seproxy.ChannelControl
 import org.eclipse.keyple.core.seproxy.SeReader
 import org.eclipse.keyple.core.seproxy.SeSelector
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
@@ -102,7 +101,7 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader?
              * Read actual ticket number
              */
             poTransaction.prepareReadRecordFile(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt())
-            poTransaction.processPoCommandsInSession()
+            poTransaction.processPoCommands()
 
             poTransaction.prepareIncreaseCounter(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt(), ticketNumber)
 
@@ -123,7 +122,7 @@ class TicketingSessionExplicitSelection(poReader: SeReader, samReader: SeReader?
             /*
              * Process transaction
              */
-            poTransaction.processClosing(ChannelControl.CLOSE_AFTER)
+            poTransaction.processClosing()
 
             Timber.i("Load ticket status  : STATUS_OK")
             ITicketingSession.STATUS_OK
