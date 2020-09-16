@@ -134,24 +134,30 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
         Timber.i("selectionResponse = $selectionResponse")
         val selectionsResult: SelectionsResult = seSelection.processDefaultSelection(selectionResponse)
         if (selectionsResult.hasActiveSelection()) {
-            val selectionIndex = selectionsResult.matchingSelections.keys.first()
-            if (selectionIndex == calypsoPoIndex) {
-                calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
-                poTypeName = "CALYPSO"
-                efEnvironmentHolder = calypsoPo.getFileBySfi(CalypsoInfo.SFI_EnvironmentAndHolder)
-                efEventLog = calypsoPo.getFileBySfi(CalypsoInfo.SFI_EventLog)
-                efCounter = calypsoPo.getFileBySfi(CalypsoInfo.SFI_Counter)
-                efContractParser = calypsoPo.getFileBySfi(CalypsoInfo.SFI_Contracts)
-            } else if (selectionIndex == mifareClassicIndex) {
-                poTypeName = "MIFARE Classic"
-            } else if (selectionIndex == mifareDesfireIndex) {
-                poTypeName = "MIFARE Desfire"
-            } else if (selectionIndex == bankingCardIndex) {
-                poTypeName = "EMV"
-            } else if (selectionIndex == navigoCardIndex) {
-                poTypeName = "NAVIGO"
-            } else {
-                poTypeName = "OTHER"
+            when (selectionsResult.matchingSelections.keys.first()) {
+                calypsoPoIndex -> {
+                    calypsoPo = selectionsResult.activeMatchingSe as CalypsoPo
+                    poTypeName = "CALYPSO"
+                    efEnvironmentHolder = calypsoPo.getFileBySfi(CalypsoInfo.SFI_EnvironmentAndHolder)
+                    efEventLog = calypsoPo.getFileBySfi(CalypsoInfo.SFI_EventLog)
+                    efCounter = calypsoPo.getFileBySfi(CalypsoInfo.SFI_Counter)
+                    efContractParser = calypsoPo.getFileBySfi(CalypsoInfo.SFI_Contracts)
+                }
+                mifareClassicIndex -> {
+                    poTypeName = "MIFARE Classic"
+                }
+                mifareDesfireIndex -> {
+                    poTypeName = "MIFARE Desfire"
+                }
+                bankingCardIndex -> {
+                    poTypeName = "EMV"
+                }
+                navigoCardIndex -> {
+                    poTypeName = "NAVIGO"
+                }
+                else -> {
+                    poTypeName = "OTHER"
+                }
             }
         }
         Timber.i("PO type = $poTypeName")
@@ -290,10 +296,8 @@ class TicketingSession(poReader: SeReader, samReader: SeReader?) :
              */
             poTransaction.prepareDecreaseCounter(CalypsoInfo.SFI_Counter, CalypsoInfo.RECORD_NUMBER_1.toInt(), 1)
 
-            //seSelection.prepareReleaseSeChannel()
-
             /*
-            * Process transaction
+            * Process transaction and close session
              */
             poTransaction.processClosing()
 
