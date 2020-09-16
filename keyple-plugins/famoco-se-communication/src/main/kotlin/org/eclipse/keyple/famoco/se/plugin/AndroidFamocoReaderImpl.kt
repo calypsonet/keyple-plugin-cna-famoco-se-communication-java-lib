@@ -13,7 +13,7 @@ package org.eclipse.keyple.famoco.se.plugin
 
 import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader
+import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
 import java.util.HashMap
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
