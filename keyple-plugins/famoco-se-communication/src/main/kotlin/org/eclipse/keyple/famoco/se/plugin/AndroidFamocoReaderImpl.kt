@@ -14,10 +14,7 @@ package org.eclipse.keyple.famoco.se.plugin
 import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
 import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
-import java.util.HashMap
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPlugin.Companion.PLUGIN_NAME
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader.Companion.READER_NAME
@@ -37,23 +34,6 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
         mSmarcardReader.openReader(115200)
         Timber.d("firmwareVersion = ${mSmarcardReader.firmwareVersion}")
         mSmarcardReader.isAutoNegotiate = true
-    }
-
-    override fun getTransmissionMode(): TransmissionMode {
-        return TransmissionMode.CONTACTS
-    }
-
-    override fun getParameters(): MutableMap<String, String> {
-        Timber.w("No parameters are supported by AndroidFamocoReader")
-        return parameters
-    }
-
-    override fun setParameter(key: String, value: String) {
-        if (key == AndroidFamocoReader.FLAG_READER_RESET_STATE) {
-            closeLogicalAndPhysicalChannels()
-        }
-        Timber.w("No parameters are supported by AndroidFamocoReader")
-        parameters[key] = value
     }
 
     override fun isSePresent(): Boolean {
@@ -83,10 +63,6 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
         poweredOn = true
     }
 
-    override fun protocolFlagMatches(protocolFlag: SeProtocol?): Boolean {
-        return protocolFlag == SeCommonProtocols.PROTOCOL_ISO7816_3
-    }
-
     override fun isPhysicalChannelOpen(): Boolean {
         Timber.d("isPhysicalChannelOpen()")
         return poweredOn
@@ -101,5 +77,21 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
         Timber.d("closePhysicalChannel()")
         mSmarcardReader.powerOff()
         poweredOn = false
+    }
+
+    override fun isContactless(): Boolean {
+        return false
+    }
+
+    override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
+        return readerProtocolName == ContactsCardCommonProtocols.ISO_7816_3.name
+    }
+
+    override fun deactivateReaderProtocol(readerProtocolName: String?) {
+        //Do nothing
+    }
+
+    override fun activateReaderProtocol(readerProtocolName: String?) {
+        //Do nothing
     }
 }

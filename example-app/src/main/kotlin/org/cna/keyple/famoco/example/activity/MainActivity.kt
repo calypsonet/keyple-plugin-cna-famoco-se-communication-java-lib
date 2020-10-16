@@ -39,13 +39,15 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols
+import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPluginFactory
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcSupportedProtocols
 import timber.log.Timber
 
 class MainActivity : AbstractExampleActivity() {
@@ -76,7 +78,7 @@ class MainActivity : AbstractExampleActivity() {
         poReader.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS", "0")
         poReader.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "0")
         (poReader as ObservableReader).addObserver(this)
-        (poReader as ObservableReader).addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.getSetting(SeCommonProtocols.PROTOCOL_ISO14443_4))
+        (poReader as ObservableReader).activateProtocol(AndroidNfcSupportedProtocols.ISO_14443_4.name, AndroidNfcProtocolSettings.getSetting(AndroidNfcSupportedProtocols.ISO_14443_4.name))
         /* Uncomment to active protocol listening for Mifare ultralight or Mifare Classic (AndroidNfcReader) */
         // (poReader as ObservableReader).addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_UL, AndroidNfcProtocolSettings.getAllSettings()[SeCommonProtocols.PROTOCOL_MIFARE_UL])
         // (poReader as ObservableReader).addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, AndroidNfcProtocolSettings.getAllSettings()[SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC])
@@ -84,6 +86,7 @@ class MainActivity : AbstractExampleActivity() {
         // Configuration for Sam Reader. Sam access provided by Famoco lib-secommunication
         // FIXME: Initialisation Delay to handler?
         samReader = samPlugin.getReader(AndroidFamocoReader.READER_NAME)
+        (samReader as AbstractLocalReader).activateProtocol(ContactsCardCommonProtocols.ISO_7816_3.name, ContactsCardCommonProtocols.ISO_7816_3.name)
     }
 
     override fun onResume() {
@@ -162,7 +165,7 @@ class MainActivity : AbstractExampleActivity() {
 
             /* Calypso selection: configures a PoSelector with all the desired attributes to make the selection and read additional information afterwards */
             val poSelectionRequest = PoSelectionRequest(PoSelector.builder()
-                .seProtocol(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                .seProtocol(AndroidNfcProtocolSettings.getSetting(AndroidNfcSupportedProtocols.ISO_14443_4.name))
                 .aidSelector(SeSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
 
@@ -260,7 +263,6 @@ class MainActivity : AbstractExampleActivity() {
                 addHeaderEvent("2nd PO exchange: read the event log file")
 
                 val poTransaction = if (withSam) {
-                    samReader.setParameter(AndroidFamocoReader.FLAG_READER_RESET_STATE, "")
                     addActionEvent("Init Sam and open channel")
                     val samResource = checkSamAndOpenChannel(samReader)
                     PoTransaction(SeResource(poReader, calypsoPo), getSecuritySettings(samResource))
@@ -348,9 +350,6 @@ class MainActivity : AbstractExampleActivity() {
     private fun runPoReadWriteTransaction(selectionsResponse: AbstractDefaultSelectionsResponse, transactionType: TransactionType) {
         try {
             addResultEvent("Tag Id : ${poReader.printTagId()}")
-
-            // FIXME: Trick to reopen all channel
-            samReader.setParameter(AndroidFamocoReader.FLAG_READER_RESET_STATE, "")
             addActionEvent("Init Sam and open channel")
             val samResource = checkSamAndOpenChannel(samReader)
 
