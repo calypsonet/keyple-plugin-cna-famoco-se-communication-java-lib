@@ -15,7 +15,6 @@ import com.famoco.secommunication.SmartcardReader
 import io.mockk.MockKAnnotations
 import io.mockk.mockk
 import io.mockk.unmockkAll
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -61,34 +60,13 @@ internal class AndroidFamocoReaderImplTest {
     }
 
     @Test
-    fun getTransmissionMode() {
-        Assert.assertEquals(TransmissionMode.CONTACTS, reader.transmissionMode)
+    fun isContactless() {
+        Assert.assertEquals(true, reader.isContactless)
     }
 
     @Test
     fun isSEPresent() {
         Assert.assertEquals(true, reader.isSePresent)
-    }
-
-    @Test
-    fun getParameters() {
-        Assert.assertNotNull(reader.parameters)
-    }
-
-    @Test
-    fun setParameters() {
-        val parameters = HashMap<String, String>()
-        parameters["key1"] = "value1"
-        reader.parameters = parameters
-        Assert.assertTrue(reader.parameters.size == 1)
-        Assert.assertTrue(reader.parameters["key1"] == "value1")
-    }
-
-    @Test
-    fun setParameter() {
-        reader.setParameter("key2", "value2")
-        Assert.assertTrue(reader.parameters.size == 1)
-        Assert.assertTrue(reader.parameters["key2"] == "value2")
     }
 
     fun getNativeReaderName(): String {
