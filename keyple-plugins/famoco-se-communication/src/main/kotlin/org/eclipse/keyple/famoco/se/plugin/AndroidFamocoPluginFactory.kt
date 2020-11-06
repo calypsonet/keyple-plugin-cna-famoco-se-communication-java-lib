@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.famoco.se.plugin
 
-import org.eclipse.keyple.core.seproxy.PluginFactory
-import org.eclipse.keyple.core.seproxy.ReaderPlugin
+import org.eclipse.keyple.core.service.Plugin
+import org.eclipse.keyple.core.service.PluginFactory
 
 class AndroidFamocoPluginFactory : PluginFactory {
 
@@ -20,7 +20,7 @@ class AndroidFamocoPluginFactory : PluginFactory {
         return AndroidFamocoPluginImpl.name
     }
 
-    override fun getPlugin(): ReaderPlugin {
+    override fun getPlugin(): Plugin {
         return AndroidFamocoPluginImpl
     }
 }

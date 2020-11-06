@@ -13,8 +13,8 @@ package org.eclipse.keyple.famoco.se.plugin
 
 import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.AbstractLocalReader
-import org.eclipse.keyple.core.seproxy.plugin.reader.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPlugin.Companion.PLUGIN_NAME
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader.Companion.READER_NAME
@@ -34,11 +34,6 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
         mSmarcardReader.openReader(115200)
         Timber.d("firmwareVersion = ${mSmarcardReader.firmwareVersion}")
         mSmarcardReader.isAutoNegotiate = true
-    }
-
-    override fun isSePresent(): Boolean {
-        // FIXED: Broken in famoco lib?
-        return mSmarcardReader.isCardPresent
     }
 
     override fun transmitApdu(apduIn: ByteArray?): ByteArray {
@@ -68,9 +63,14 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
         return poweredOn
     }
 
-    override fun checkSePresence(): Boolean {
+    override fun checkCardPresence(): Boolean {
         Timber.d("checkSePresence()")
-        return isSePresent
+        return isCardPresent
+    }
+
+    override fun isCardPresent(): Boolean {
+        // FIXED: Broken in famoco lib?
+        return mSmarcardReader.isCardPresent
     }
 
     override fun closePhysicalChannel() {

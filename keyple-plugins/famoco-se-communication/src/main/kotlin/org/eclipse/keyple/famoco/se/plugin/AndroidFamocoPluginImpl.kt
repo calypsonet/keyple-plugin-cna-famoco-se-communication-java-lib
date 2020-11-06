@@ -11,19 +11,18 @@
  ********************************************************************************/
 package org.eclipse.keyple.famoco.se.plugin
 
-import java.util.HashMap
+import org.eclipse.keyple.core.plugin.AbstractPlugin
+import org.eclipse.keyple.core.service.Reader
+import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import org.eclipse.keyple.core.seproxy.SeReader
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin
-import timber.log.Timber
 
 internal object AndroidFamocoPluginImpl : AbstractPlugin(AndroidFamocoPlugin.PLUGIN_NAME), AndroidFamocoPlugin {
 
-    override fun initNativeReaders(): ConcurrentMap<String, SeReader>? {
+    override fun initNativeReaders(): ConcurrentMap<String, Reader>? {
         Timber.d("InitNativeReader() add the unique instance of AndroidFamocoReader")
 
-        val readers = ConcurrentHashMap<String, SeReader>()
+        val readers = ConcurrentHashMap<String, Reader>()
         readers[AndroidFamocoReaderImpl.name] = AndroidFamocoReaderImpl
         return readers
     }
