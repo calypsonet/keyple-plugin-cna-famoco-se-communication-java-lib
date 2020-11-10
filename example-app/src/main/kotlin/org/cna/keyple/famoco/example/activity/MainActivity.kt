@@ -40,7 +40,7 @@ import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.event.ReaderEvent
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPluginFactory
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader
@@ -68,7 +68,7 @@ class MainActivity : AbstractExampleActivity() {
 
     override fun initReaders() {
         // Initialize SEProxy with Android Plugins
-        val nfcPlugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory())
+        val nfcPlugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory(this))
         val samPlugin = SmartCardService.getInstance().registerPlugin(AndroidFamocoPluginFactory())
 
         // Configuration of AndroidNfc Reader
@@ -86,13 +86,13 @@ class MainActivity : AbstractExampleActivity() {
         // Configuration for Sam Reader. Sam access provided by Famoco lib-secommunication
         // FIXME: Initialisation Delay to handler?
         samReader = samPlugin.getReader(AndroidFamocoReader.READER_NAME)
-        (samReader as AbstractLocalReader).activateProtocol(ContactsCardCommonProtocols.ISO_7816_3.name, ContactsCardCommonProtocols.ISO_7816_3.name)
+        (samReader as AbstractLocalReader).activateProtocol(ContactCardCommonProtocols.ISO_7816_3.name, ContactCardCommonProtocols.ISO_7816_3.name)
     }
 
     override fun onResume() {
         super.onResume()
         addActionEvent("Enabling NFC Reader mode")
-        poReader.enableNFCReaderMode(this)
+        poReader.startCardDetection(ObservableReader.PollingMode.REPEATING)
         addResultEvent("Please choose a use case")
     }
 
@@ -101,8 +101,6 @@ class MainActivity : AbstractExampleActivity() {
         try {
             // notify reader that se detection has been switched off
             poReader.stopCardDetection()
-            // Disable Reader Mode for NFC Adapter
-            poReader.disableNFCReaderMode(this)
         } catch (e: KeyplePluginNotFoundException) {
             Timber.e(e, "NFC Plugin not found")
             addResultEvent("Error: NFC Plugin not found")
@@ -112,6 +110,10 @@ class MainActivity : AbstractExampleActivity() {
 
     override fun onDestroy() {
         (poReader as ObservableReader).removeObserver(this)
+
+        SmartCardService.getInstance().plugins.forEach {
+            SmartCardService.getInstance().unregisterPlugin(it.key)
+        }
         super.onDestroy()
     }
 
@@ -205,8 +207,8 @@ class MainActivity : AbstractExampleActivity() {
                                 addResultEvent("PO removed")
                             }
 
-                            ReaderEvent.EventType.TIMEOUT_ERROR -> {
-                                addResultEvent("PO Timeout")
+                            else -> {
+                                // Do nothing
                             }
                         }
                     }
@@ -409,7 +411,7 @@ class MainActivity : AbstractExampleActivity() {
         } catch (e: IllegalStateException) {
             Timber.e(e)
             addResultEvent("Illegal State Exception: ${e.message}")
-        }catch (e: KeypleReaderException) {
+        } catch (e: KeypleReaderException) {
             Timber.e(e)
             addResultEvent("Exception: ${e.message}")
         } catch (e: KeypleReaderException) {

@@ -14,7 +14,7 @@ package org.eclipse.keyple.famoco.se.plugin
 import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
 import org.eclipse.keyple.core.plugin.reader.AbstractLocalReader
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPlugin.Companion.PLUGIN_NAME
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoReader.Companion.READER_NAME
@@ -84,14 +84,14 @@ internal object AndroidFamocoReaderImpl : AbstractLocalReader(PLUGIN_NAME, READE
     }
 
     override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
-        return readerProtocolName == ContactsCardCommonProtocols.ISO_7816_3.name
+        return readerProtocolName == ContactCardCommonProtocols.ISO_7816_3.name
     }
 
     override fun deactivateReaderProtocol(readerProtocolName: String?) {
-        //Do nothing
+        // Do nothing
     }
 
     override fun activateReaderProtocol(readerProtocolName: String?) {
-        //Do nothing
+        // Do nothing
     }
 }
