@@ -32,9 +32,9 @@ import org.cna.keyple.famoco.example.adapter.EventAdapter
 import org.cna.keyple.famoco.example.model.ChoiceEventModel
 import org.cna.keyple.famoco.example.model.EventModel
 import org.eclipse.keyple.calypso.command.sam.SamRevision
-import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.calypso.transaction.CalypsoSam
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings
+import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.calypso.transaction.SamSelectionRequest
 import org.eclipse.keyple.calypso.transaction.SamSelector
 import org.eclipse.keyple.core.card.selection.CardResource
@@ -44,7 +44,7 @@ import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.event.ReaderEvent
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
-import org.eclipse.keyple.core.service.util.ContactsCardCommonProtocols
+import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import timber.log.Timber
 
 abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ObservableReader.ReaderObserver {
@@ -153,7 +153,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         val samSelection = CardSelection(MultiSelectionProcessing.FIRST_MATCH)
 
         val samSelector = SamSelector.builder()
-            .cardProtocol(ContactsCardCommonProtocols.ISO_7816_3.name)
+            .cardProtocol(ContactCardCommonProtocols.ISO_7816_3.name)
             .samRevision(SamRevision.C1)
             .build()
 

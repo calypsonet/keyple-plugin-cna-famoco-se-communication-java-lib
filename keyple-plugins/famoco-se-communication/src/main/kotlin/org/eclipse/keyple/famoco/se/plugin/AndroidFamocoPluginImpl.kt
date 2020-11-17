@@ -11,11 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.famoco.se.plugin
 
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import org.eclipse.keyple.core.plugin.AbstractPlugin
 import org.eclipse.keyple.core.service.Reader
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 internal object AndroidFamocoPluginImpl : AbstractPlugin(AndroidFamocoPlugin.PLUGIN_NAME), AndroidFamocoPlugin {
 
