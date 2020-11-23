@@ -38,6 +38,7 @@ import org.eclipse.keyple.core.service.SmartCardService
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse
 import org.eclipse.keyple.core.service.event.ObservableReader
 import org.eclipse.keyple.core.service.event.ReaderEvent
+import org.eclipse.keyple.core.service.event.ReaderObservationExceptionHandler
 import org.eclipse.keyple.core.service.exception.KeyplePluginNotFoundException
 import org.eclipse.keyple.core.service.exception.KeypleReaderException
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
@@ -68,7 +69,11 @@ class MainActivity : AbstractExampleActivity() {
 
     override fun initReaders() {
         // Initialize SEProxy with Android Plugins
-        val nfcPlugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory(this))
+        val nfcPlugin = SmartCardService.getInstance().registerPlugin(AndroidNfcPluginFactory(
+            this,
+            ReaderObservationExceptionHandler { pluginName, readerName, e ->
+                Timber.e("An unexpected reader error occurred: $pluginName:$readerName : $e")
+            }))
         val samPlugin = SmartCardService.getInstance().registerPlugin(AndroidFamocoPluginFactory())
 
         // Configuration of AndroidNfc Reader
