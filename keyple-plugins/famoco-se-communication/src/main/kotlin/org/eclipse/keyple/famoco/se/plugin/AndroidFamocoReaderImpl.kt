@@ -13,7 +13,7 @@ package org.eclipse.keyple.famoco.se.plugin
 
 import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
-import org.eclipse.keyple.core.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.plugin.AbstractLocalReader
 import org.eclipse.keyple.core.service.util.ContactCardCommonProtocols
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import org.eclipse.keyple.famoco.se.plugin.AndroidFamocoPlugin.Companion.PLUGIN_NAME

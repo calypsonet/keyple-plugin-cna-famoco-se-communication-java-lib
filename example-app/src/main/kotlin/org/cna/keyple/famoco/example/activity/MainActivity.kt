@@ -32,7 +32,7 @@ import org.eclipse.keyple.core.card.selection.CardSelection
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
 import org.eclipse.keyple.core.card.selection.SelectionsResult
-import org.eclipse.keyple.core.plugin.reader.AbstractLocalReader
+import org.eclipse.keyple.core.plugin.AbstractLocalReader
 import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.core.service.SmartCardService
 import org.eclipse.keyple.core.service.event.AbstractDefaultSelectionsResponse
@@ -78,10 +78,11 @@ class MainActivity : AbstractExampleActivity() {
 
         // Configuration of AndroidNfc Reader
         poReader = nfcPlugin.getReader(AndroidNfcReader.READER_NAME) as AndroidNfcReader
-        poReader.setParameter("FLAG_READER_RESET_STATE", "0")
-        poReader.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "100")
-        poReader.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS", "0")
-        poReader.setParameter("FLAG_READER_SKIP_NDEF_CHECK", "0")
+
+        poReader.presenceCheckDelay = 100
+        poReader.noPlateformSound = false
+        poReader.skipNdefCheck = false
+
         (poReader as ObservableReader).addObserver(this)
         (poReader as ObservableReader).activateProtocol(AndroidNfcSupportedProtocols.ISO_14443_4.name, AndroidNfcProtocolSettings.getSetting(AndroidNfcSupportedProtocols.ISO_14443_4.name))
         /* Uncomment to active protocol listening for Mifare ultralight or Mifare Classic (AndroidNfcReader) */
