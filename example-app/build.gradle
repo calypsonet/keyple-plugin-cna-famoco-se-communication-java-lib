@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        applicationId "org.cna.keyple.famoco.example"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/NOTICE.md'
+    }
+}
+
+dependencies {
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
+    implementation "com.google.android.material:material:$android_material_version"
+
+    //Kotlin
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+    //Keyple
+    implementation "org.eclipse.keyple:keyple-java-core:$keyple_version"
+    implementation "org.eclipse.keyple:keyple-java-calypso:$keyple_version"
+    implementation "org.eclipse.keyple:keyple-android-plugin-nfc:$keyple_version"
+    implementation project(path: ':keyple-plugins:famoco-se-communication')
+    //implementation "org.eclipse.keyple:famoco-se-communication:$keyple_version"
+
+    implementation "com.jakewharton.timber:timber:$timber_version" //Android
+
+    testImplementation "junit:junit:$junit_version"
+
+    androidTestImplementation "androidx.test.ext:junit:$junit_androidx_ext_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
+}
