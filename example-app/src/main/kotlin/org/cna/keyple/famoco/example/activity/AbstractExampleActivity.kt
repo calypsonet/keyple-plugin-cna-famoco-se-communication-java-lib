@@ -35,10 +35,10 @@ import org.eclipse.keyple.calypso.command.sam.SamRevision
 import org.eclipse.keyple.calypso.transaction.CalypsoSam
 import org.eclipse.keyple.calypso.transaction.PoSecuritySettings
 import org.eclipse.keyple.calypso.transaction.PoTransaction
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest
+import org.eclipse.keyple.calypso.transaction.SamSelection
 import org.eclipse.keyple.calypso.transaction.SamSelector
 import org.eclipse.keyple.core.card.selection.CardResource
-import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelectionsService
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
 import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.core.service.event.ObservableReader
@@ -150,18 +150,18 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
          * check the availability of the SAM doing a ATR based selection, open its physical and
          * logical channels and keep it open
          */
-        val samSelection = CardSelection(MultiSelectionProcessing.FIRST_MATCH)
+        val samSelection = CardSelectionsService(MultiSelectionProcessing.FIRST_MATCH)
 
         val samSelector = SamSelector.builder()
             .cardProtocol(ContactCardCommonProtocols.ISO_7816_3.name)
             .samRevision(SamRevision.C1)
             .build()
 
-        samSelection.prepareSelection(SamSelectionRequest(samSelector))
+        samSelection.prepareSelection(SamSelection(samSelector))
 
         return try {
             if (samReader.isCardPresent) {
-                val calypsoSam = samSelection.processExplicitSelection(samReader).activeSmartCard as CalypsoSam
+                val calypsoSam = samSelection.processExplicitSelections(samReader).activeSmartCard as CalypsoSam
                 CardResource<CalypsoSam>(samReader, calypsoSam)
             } else {
                 addResultEvent("Error: Sam is not present in the reader")

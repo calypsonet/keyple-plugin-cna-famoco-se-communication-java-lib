@@ -23,15 +23,15 @@ import org.cna.keyple.famoco.example.util.CalypsoClassicInfo
 import org.eclipse.keyple.calypso.command.po.exception.CalypsoPoCommandException
 import org.eclipse.keyple.calypso.command.sam.exception.CalypsoSamCommandException
 import org.eclipse.keyple.calypso.transaction.CalypsoPo
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest
+import org.eclipse.keyple.calypso.transaction.PoSelection
 import org.eclipse.keyple.calypso.transaction.PoSelector
 import org.eclipse.keyple.calypso.transaction.PoTransaction
 import org.eclipse.keyple.calypso.transaction.exception.CalypsoPoTransactionException
 import org.eclipse.keyple.core.card.selection.CardResource
-import org.eclipse.keyple.core.card.selection.CardSelection
+import org.eclipse.keyple.core.card.selection.CardSelectionsResult
+import org.eclipse.keyple.core.card.selection.CardSelectionsService
 import org.eclipse.keyple.core.card.selection.CardSelector
 import org.eclipse.keyple.core.card.selection.MultiSelectionProcessing
-import org.eclipse.keyple.core.card.selection.SelectionsResult
 import org.eclipse.keyple.core.plugin.AbstractLocalReader
 import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.core.service.SmartCardService
@@ -55,7 +55,7 @@ class MainActivity : AbstractExampleActivity() {
 
     private lateinit var poReader: AndroidNfcReader
     private lateinit var samReader: Reader
-    private lateinit var seSelection: CardSelection
+    private lateinit var cardSelectionsService: CardSelectionsService
 
     private enum class TransactionType {
         DECREASE,
@@ -169,10 +169,10 @@ class MainActivity : AbstractExampleActivity() {
         addActionEvent("Prepare Calypso PO Selection with AID: ${CalypsoClassicInfo.AID}")
         try {
             /* Prepare a Calypso PO selection */
-            seSelection = CardSelection(MultiSelectionProcessing.FIRST_MATCH)
+            cardSelectionsService = CardSelectionsService(MultiSelectionProcessing.FIRST_MATCH)
 
             /* Calypso selection: configures a PoSelector with all the desired attributes to make the selection and read additional information afterwards */
-            val poSelectionRequest = PoSelectionRequest(PoSelector.builder()
+            val poSelectionRequest = PoSelection(PoSelector.builder()
                 .cardProtocol(AndroidNfcProtocolSettings.getSetting(AndroidNfcSupportedProtocols.ISO_14443_4.name))
                 .aidSelector(CardSelector.AidSelector.builder().aidToSelect(CalypsoClassicInfo.AID).build())
                 .invalidatedPo(PoSelector.InvalidatedPo.REJECT).build())
@@ -185,13 +185,13 @@ class MainActivity : AbstractExampleActivity() {
              * Add the selection case to the current selection (we could have added other cases
              * here)
              */
-            seSelection.prepareSelection(poSelectionRequest)
+            cardSelectionsService.prepareSelection(poSelectionRequest)
 
             /*
             * Provide the SeReader with the selection operation to be processed when a PO is
             * inserted.
             */
-            (poReader as ObservableReader).setDefaultSelectionRequest(seSelection.selectionOperation,
+            (poReader as ObservableReader).setDefaultSelectionRequest(cardSelectionsService.defaultSelectionsRequest,
                 ObservableReader.NotificationMode.MATCHED_ONLY)
 
             useCase = object : UseCase {
@@ -254,7 +254,7 @@ class MainActivity : AbstractExampleActivity() {
              * print tag info in View
              */
             addActionEvent("Process selection")
-            val selectionsResult = seSelection.processDefaultSelection(selectionsResponse)
+            val selectionsResult = cardSelectionsService.processDefaultSelectionsResponse(selectionsResponse)
 
             if (selectionsResult.hasActiveSelection()) {
                 addResultEvent("Selection successful")
@@ -335,14 +335,14 @@ class MainActivity : AbstractExampleActivity() {
         }
     }
 
-    private fun readCounter(selectionsResult: SelectionsResult): Int? {
-        val calypsoPo = selectionsResult.activeSmartCard as CalypsoPo
+    private fun readCounter(result: CardSelectionsResult): Int? {
+        val calypsoPo = result.activeSmartCard as CalypsoPo
         val efCounter1 = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_Counter1)
         return efCounter1.data.getContentAsCounterValue(CalypsoClassicInfo.RECORD_NUMBER_1.toInt())
     }
 
-    private fun readEventLog(selectionsResult: SelectionsResult): ByteArray? {
-        val calypsoPo = selectionsResult.activeSmartCard as CalypsoPo
+    private fun readEventLog(result: CardSelectionsResult): ByteArray? {
+        val calypsoPo = result.activeSmartCard as CalypsoPo
         val efCounter1 = calypsoPo.getFileBySfi(CalypsoClassicInfo.SFI_EventLog)
         return efCounter1.data.content
     }
@@ -362,7 +362,7 @@ class MainActivity : AbstractExampleActivity() {
             val samResource = checkSamAndOpenChannel(samReader)
 
             addActionEvent("1st PO exchange: aid selection")
-            val selectionsResult = seSelection.processDefaultSelection(selectionsResponse)
+            val selectionsResult = cardSelectionsService.processDefaultSelectionsResponse(selectionsResponse)
 
             if (selectionsResult.hasActiveSelection()) {
                 addResultEvent("Calypso PO selection: SUCCESS")
