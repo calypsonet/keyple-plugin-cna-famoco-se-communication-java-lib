@@ -84,7 +84,7 @@ subprojects{
 
 ext{
 
-    keyple_version = '1.0.0-SNAPSHOT'
+    keyple_version = '1.0.0'
 
     appcompat_version = '1.1.0'
     core_ktx_version = '1.2.0'
