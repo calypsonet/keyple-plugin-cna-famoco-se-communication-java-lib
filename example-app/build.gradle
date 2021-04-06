@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "org.cna.keyple.famoco.example"
@@ -33,7 +33,8 @@ android {
 }
 
 dependencies {
-    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
     implementation "com.google.android.material:material:$android_material_version"
@@ -47,11 +48,17 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     //Keyple
-    implementation "org.eclipse.keyple:keyple-java-core:$keyple_version"
-    implementation "org.eclipse.keyple:keyple-java-calypso:$keyple_version"
-    implementation "org.eclipse.keyple:keyple-android-plugin-nfc:$keyple_version"
+    implementation "org.eclipse.keyple:keyple-service-java-lib:2.0.0-SNAPSHOT"
+    implementation "org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0-SNAPSHOT"
+    implementation "org.eclipse.keyple:keyple-service-resource-java-lib:2.0.0-SNAPSHOT"
+
+    implementation "org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0-SNAPSHOT"
+    implementation "org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0-SNAPSHOT"
+    implementation "org.calypsonet.terminal:calypsonet-terminal-card-java-api:1.0-SNAPSHOT"
+
     implementation project(path: ':keyple-plugins:famoco-se-communication')
-    //implementation "org.eclipse.keyple:famoco-se-communication:$keyple_version"
+
+    implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.0-rc1"
 
     implementation "com.jakewharton.timber:timber:$timber_version" //Android
 

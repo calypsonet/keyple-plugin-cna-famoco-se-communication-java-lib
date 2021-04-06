@@ -44,4 +44,9 @@ object CalypsoClassicInfo {
     const val SFI_Counter1 = 0x19.toByte()
     const val eventLog_dataFill =
         "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC"
+
+    // Security settings
+    const val SAM_PROFILE_NAME = "SAM C1"
+
+    const val SAM_READER_NAME_REGEX = ".*FamocoReader"
 }
