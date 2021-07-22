@@ -3,14 +3,14 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-archivesBaseName = "keyple-android-plugin-famoco-se-communication"
+archivesBaseName = "keyple-plugin-cna-famoco-se-communication-java-lib"
 
 group 'org.eclipse.keyple'
 project.description = 'Keyple Plugin based on Famoco Se Communication library'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
         minSdkVersion 19
@@ -117,8 +117,9 @@ dependencies {
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
     //Keyple
-    implementation "org.eclipse.keyple:keyple-java-core:$keyple_version"
-    //implementation project(path:":java:component:keyple-core")
+    api "org.eclipse.keyple:keyple-common-java-api:2.0-SNAPSHOT"
+    api "org.eclipse.keyple:keyple-util-java-lib:2.0.0-SNAPSHOT"
+    implementation "org.eclipse.keyple:keyple-plugin-java-api:2.0-SNAPSHOT"
 
     //logging
     implementation "org.slf4j:slf4j-api:$slf4j_api_version"
