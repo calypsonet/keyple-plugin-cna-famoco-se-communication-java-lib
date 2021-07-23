@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "org.cna.keyple.famoco.example"
+        applicationId "org.calypsonet.keyple.plugin.famoco.example"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -56,7 +56,7 @@ dependencies {
     implementation "org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0-SNAPSHOT"
     implementation "org.calypsonet.terminal:calypsonet-terminal-card-java-api:1.0-SNAPSHOT"
 
-    implementation project(path: ':keyple-plugins:famoco-se-communication')
+    implementation project(path: ':famoco-plugin')
 
     implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.0-rc1"
 

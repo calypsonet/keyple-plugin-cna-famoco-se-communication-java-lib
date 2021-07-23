@@ -24,7 +24,7 @@ buildscript {
 }
 
 allprojects {
-    group 'org.eclipse.keyple'
+    group 'org.calypsonet.keyple'
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: "com.diffplug.gradle.spotless"
     repositories {
@@ -61,7 +61,7 @@ subprojects{
 
             // also supports license headers
             licenseHeader '/********************************************************************************\n' +
-                    ' * Copyright (c) $YEAR Calypso Networks Association https://www.calypsonet-asso.org/\n' +
+                    ' * Copyright (c) $YEAR Calypso Networks Association https://calypsonet.org/\n' +
                     ' *\n' +
                     ' * See the NOTICE file(s) distributed with this work for additional information regarding copyright\n' +
                     ' * ownership.\n' +

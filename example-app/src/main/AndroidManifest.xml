@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.cna.keyple.famoco.example">
+    package="org.calypsonet.keyple.plugin.famoco.example">
 
     <application
-        android:name="org.cna.keyple.famoco.example.DemoApplication"
+        android:name="org.calypsonet.keyple.plugin.famoco.example.DemoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
-        <activity android:name="org.cna.keyple.famoco.example.activity.MainActivity"
+        <activity android:name="org.calypsonet.keyple.plugin.famoco.example.activity.MainActivity"
             android:label="Keyple Famoco demo"
             android:screenOrientation="portrait"
             android:clearTaskOnLaunch="true">
