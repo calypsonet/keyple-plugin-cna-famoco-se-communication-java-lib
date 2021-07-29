@@ -117,9 +117,9 @@ dependencies {
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
     //Keyple
-    api "org.eclipse.keyple:keyple-common-java-api:2.0-SNAPSHOT"
+    api "org.eclipse.keyple:keyple-common-java-api:2.0.0-SNAPSHOT"
     api "org.eclipse.keyple:keyple-util-java-lib:2.0.0-SNAPSHOT"
-    implementation "org.eclipse.keyple:keyple-plugin-java-api:2.0-SNAPSHOT"
+    implementation "org.eclipse.keyple:keyple-plugin-java-api:2.0.0-SNAPSHOT"
 
     //logging
     implementation "org.slf4j:slf4j-api:$slf4j_api_version"
