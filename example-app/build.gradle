@@ -52,13 +52,13 @@ dependencies {
     implementation "org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0-SNAPSHOT"
     implementation "org.eclipse.keyple:keyple-service-resource-java-lib:2.0.0-SNAPSHOT"
 
-    implementation "org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0-SNAPSHOT"
-    implementation "org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0-SNAPSHOT"
-    implementation "org.calypsonet.terminal:calypsonet-terminal-card-java-api:1.0-SNAPSHOT"
+    implementation "org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.0-SNAPSHOT"
+    implementation "org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.0-SNAPSHOT"
+    implementation "org.calypsonet.terminal:calypsonet-terminal-card-java-api:1.0.0-SNAPSHOT"
 
     implementation project(path: ':famoco-plugin')
 
-    implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.0-rc1"
+    implementation "org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.0-SNAPSHOT"
 
     implementation "com.jakewharton.timber:timber:$timber_version" //Android
 
