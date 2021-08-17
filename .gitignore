@@ -1,17 +1,45 @@
+# Java class files
+*.class
+
+# Generated files
+gen/
+out/
+release/
+local.properties
+
+# Gradle
+.gradle/
+build*/
+LICENSE_HEADER
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IntelliJ IDEA
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+*.iws
+*.ipr
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# MacOS
 .DS_Store
-/build
-/*/build/
-/*/*.iml
-/captures
-.externalNativeBuild
-.cxx
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
