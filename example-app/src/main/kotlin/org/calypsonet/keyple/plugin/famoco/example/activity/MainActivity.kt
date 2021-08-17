@@ -31,12 +31,12 @@ import org.calypsonet.terminal.reader.selection.CardSelectionManager
 import org.calypsonet.terminal.reader.selection.CardSelectionResult
 import org.calypsonet.terminal.reader.selection.ScheduledCardSelectionsResponse
 import org.eclipse.keyple.card.calypso.CalypsoExtensionService
+import org.eclipse.keyple.core.service.ConfigurableReader
 import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.core.service.ObservableReader
 import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.eclipse.keyple.core.util.ByteArrayUtil
-import org.eclipse.keyple.core.util.protocol.ContactCardCommonProtocol
 import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
@@ -49,7 +49,6 @@ class MainActivity : AbstractExampleActivity() {
 
     private lateinit var cardSelectionManager: CardSelectionManager
     private lateinit var contactlessCardProtocol: ContactlessCardCommonProtocol
-    private lateinit var contactCardProtocol: ContactCardCommonProtocol
 
     private enum class TransactionType {
         DECREASE,
@@ -83,18 +82,13 @@ class MainActivity : AbstractExampleActivity() {
 
         (poReader as ObservableReader).addObserver(this)
         contactlessCardProtocol = ContactlessCardCommonProtocol.ISO_14443_4
-        (poReader as ObservableReader).activateProtocol(
+        (poReader as ConfigurableReader).activateProtocol(
             contactlessCardProtocol.name,
             contactlessCardProtocol.name
         )
 
         // Configuration for Sam Reader. Sam access provided by Famoco lib-secommunication
         samReader = samPlugin.getReader(AndroidFamocoReader.READER_NAME)
-        contactCardProtocol = ContactCardCommonProtocol.ISO_7816_3
-        samReader.activateProtocol(
-            contactCardProtocol.name,
-            contactCardProtocol.name
-        )
     }
 
     override fun onResume() {

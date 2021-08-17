@@ -14,7 +14,6 @@ package org.calypsonet.keyple.plugin.famoco
 import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
 import org.calypsonet.keyple.plugin.famoco.AndroidFamocoReader.Companion.READER_NAME
-import org.calypsonet.keyple.plugin.famoco.utils.ContactCardCommonProtocols
 import org.eclipse.keyple.core.plugin.spi.reader.ReaderSpi
 import org.eclipse.keyple.core.util.ByteArrayUtil
 import timber.log.Timber
@@ -77,22 +76,6 @@ internal class AndroidFamocoReaderAdapter :
 
     override fun isContactless(): Boolean {
         return false
-    }
-
-    override fun isCurrentProtocol(readerProtocolName: String?): Boolean {
-        return readerProtocolName == ContactCardCommonProtocols.ISO_7816_3.name
-    }
-
-    override fun isProtocolSupported(readerProtocol: String?): Boolean {
-        return readerProtocol == ContactCardCommonProtocols.ISO_7816_3.name
-    }
-
-    override fun activateProtocol(readerProtocol: String?) {
-        // Do nothing
-    }
-
-    override fun deactivateProtocol(readerProtocol: String?) {
-        // Do nothing
     }
 
     override fun getName(): String = READER_NAME

@@ -19,8 +19,10 @@ import org.calypsonet.keyple.plugin.famoco.AndroidFamocoReaderAdapter
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
+@Ignore
 internal class AndroidFamocoReaderAdapterTest {
 
     companion object {
