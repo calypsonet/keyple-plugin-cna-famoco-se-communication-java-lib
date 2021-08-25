@@ -13,16 +13,14 @@ buildscript {
         maven(url = "https://repo.eclipse.org/service/local/repositories/maven_central/content")
         mavenCentral()
         google()
-        jcenter()
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.android.tools.build:gradle:4.1.3")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
-        classpath("com.diffplug.spotless:spotless-plugin-gradle:5.14.0")
         classpath("org.eclipse.keyple:keyple-gradle:0.2.+") { isChanging = true }
     }
 }
+apply(plugin = "org.eclipse.keyple")
 
 ///////////////////////////////////////////////////////////////////////////////
 //  APP CONFIGURATION
@@ -36,7 +34,6 @@ allprojects{
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
         maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots")
         google()
-        jcenter()
     }
 }
 

@@ -134,5 +134,4 @@ tasks {
         }
     }
 }
-apply(plugin = "org.eclipse.keyple")
 
