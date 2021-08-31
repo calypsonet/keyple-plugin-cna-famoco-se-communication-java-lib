@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.dokka")
     jacoco
     id("com.diffplug.spotless")
+    `maven-publish`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,6 +131,39 @@ tasks {
                 noAndroidSdkLink.set(false)
                 includeNonPublic.set(false)
                 includes.from(files("src/main/kdoc/overview.md"))
+            }
+        }
+    }
+}
+
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Kotlin docs with Dokka"
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaHtml)
+    dependsOn(tasks.dokkaHtml)
+}
+
+val sourcesJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles sources JAR"
+    archiveClassifier.set("sources")
+    from(android.sourceSets.getByName("main").java.srcDirs)
+}
+
+artifacts {
+    archives(sourcesJar)
+    archives(dokkaJar)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("debug") {
+                from(components["debug"])
+                artifactId = archivesBaseName
+                artifact(sourcesJar)
+                artifact(dokkaJar)
             }
         }
     }
