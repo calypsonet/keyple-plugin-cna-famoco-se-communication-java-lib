@@ -67,14 +67,14 @@ dependencies {
 
     //Keyple Common
     implementation(project(path = ":famoco-plugin"))
-    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.0-SNAPSHOT") { isChanging = true }
-    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.0-SNAPSHOT") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.0-SNAPSHOT") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-common-java-api:2.0.0-SNAPSHOT") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-service-java-lib:2.0.0-SNAPSHOT") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-service-resource-java-lib:2.0.0-SNAPSHOT") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0-SNAPSHOT") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-util-java-lib:2.0.0-SNAPSHOT") { isChanging = true }
+    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.0-rc4") { isChanging = true }
+    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.0.0-rc3") { isChanging = true }
+    implementation("org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.0-rc3") { isChanging = true }
+    implementation("org.eclipse.keyple:keyple-common-java-api:2.0.0-rc4") { isChanging = true }
+    implementation("org.eclipse.keyple:keyple-service-java-lib:2.0.0-rc5") { isChanging = true }
+    implementation("org.eclipse.keyple:keyple-service-resource-java-lib:2.0.0-rc3") { isChanging = true }
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.0-rc4") { isChanging = true }
+    implementation("org.eclipse.keyple:keyple-util-java-lib:2.0.0-rc4") { isChanging = true }
 
     /*
     Android components
