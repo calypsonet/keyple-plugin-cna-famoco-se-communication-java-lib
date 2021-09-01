@@ -1,0 +1,18 @@
+url: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib
+organization:
+  name: Calypso Networks Association
+  url: https://calypsonet.org/
+licenses:
+  - name: Eclipse Public License - v 2.0
+    url: https://www.eclipse.org/legal/epl-2.0/
+    distribution: repo
+developers:
+  - name: Calypso Networks Association Technical Team
+    email: support-dev@calypsonet.org
+scm:
+  connection: scm:git:git://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib.git
+  developerConnection: scm:git:https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib.git
+  url: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib
+ciManagement:
+  system: GitHub Actions
+  url: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib/actions
