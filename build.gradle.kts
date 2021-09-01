@@ -5,7 +5,6 @@ plugins {
     id("com.diffplug.spotless") version "5.10.2"
     id("org.sonarqube") version "3.1"
     id("org.jetbrains.dokka") version "1.4.32"
-    `maven-publish`
 }
 buildscript {
     val kotlinVersion: String by project
@@ -21,7 +20,6 @@ buildscript {
         classpath("org.eclipse.keyple:keyple-gradle:0.2.+") { isChanging = true }
     }
 }
-apply(plugin = "org.eclipse.keyple")
 
 ///////////////////////////////////////////////////////////////////////////////
 //  APP CONFIGURATION
@@ -49,7 +47,7 @@ tasks {
             licenseHeaderFile("${project.rootDir}/LICENSE_HEADER")
         }
         java {
-            target("src/**/*.java")
+            target("**/src/**/*.java")
             licenseHeaderFile("${project.rootDir}/LICENSE_HEADER")
             importOrder("java", "javax", "org", "com", "")
             removeUnusedImports()

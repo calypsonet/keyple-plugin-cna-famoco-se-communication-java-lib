@@ -8,7 +8,6 @@ plugins {
     id("org.jetbrains.dokka")
     jacoco
     id("com.diffplug.spotless")
-    `maven-publish`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,37 +134,5 @@ tasks {
         }
     }
 }
-
-val dokkaJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = "Assembles Kotlin docs with Dokka"
-    archiveClassifier.set("javadoc")
-    from(tasks.dokkaHtml)
-    dependsOn(tasks.dokkaHtml)
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = "Assembles sources JAR"
-    archiveClassifier.set("sources")
-    from(android.sourceSets.getByName("main").java.srcDirs)
-}
-
-artifacts {
-    archives(sourcesJar)
-    archives(dokkaJar)
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("debug") {
-                from(components["debug"])
-                artifactId = archivesBaseName
-                artifact(sourcesJar)
-                artifact(dokkaJar)
-            }
-        }
-    }
-}
+apply(plugin = "org.eclipse.keyple") // To do last
 
