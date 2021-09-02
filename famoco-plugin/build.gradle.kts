@@ -98,11 +98,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
 
-    // Devnied - Byte Utils
-    implementation("com.github.devnied:bit-lib4j:1.4.5") {
-        exclude("org.slf4j")
-    }
-
     //logging
     implementation("org.slf4j:slf4j-api:1.7.32")
     implementation("com.jakewharton.timber:timber:4.7.1") //Android
