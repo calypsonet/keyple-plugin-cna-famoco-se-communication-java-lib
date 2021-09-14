@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Keyple Plugin CNA Famoco SE Communication Java Library** is an addon to allow an application using Keyple to interact with Famoco terminals.
+The **Keyple Plugin CNA Famoco SE Communication Java Library** is an add-on to allow an application using Keyple to interact with Famoco terminals.
 
 The current version is based on Famoco's native SE Communication library (SeCommunicaton Library v1.7.0.)
 
