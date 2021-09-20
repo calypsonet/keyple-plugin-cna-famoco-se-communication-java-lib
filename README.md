@@ -8,10 +8,6 @@ The current version is based on Famoco's native SE Communication library (SeComm
 
 Should be compatible with FX100, FX200 and FC300 series.
 
-## Javadoc
-
-The javadoc is available online: [calypsonet.github.io/keyple-plugin-cna-flowbird-android-java-lib/](https://calypsonet.github.io/keyple-plugin-cna-flowbird-android-java-lib/)
-
 ## Examples
 
 An example of implementation is available in the **example-app** folder.
