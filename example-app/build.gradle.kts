@@ -73,7 +73,7 @@ dependencies {
     implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+") { isChanging = true }
     implementation("org.eclipse.keyple:keyple-service-java-lib:2.0.1")
     implementation("org.eclipse.keyple:keyple-service-resource-java-lib:2.0.1")
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.1")
+    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.0.3")
     implementation("org.eclipse.keyple:keyple-util-java-lib:2.+") { isChanging = true }
 
     /*
