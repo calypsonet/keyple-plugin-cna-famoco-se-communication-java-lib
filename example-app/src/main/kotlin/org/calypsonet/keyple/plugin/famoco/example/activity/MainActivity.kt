@@ -186,7 +186,7 @@ class MainActivity : AbstractExampleActivity() {
 
             /* Prepare the reading order and keep the associated parser for later use once the
              selection has been made. */
-            poSelectionRequest.prepareReadRecordFile(
+            poSelectionRequest.prepareReadRecord(
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                 CalypsoClassicInfo.RECORD_NUMBER_1.toInt()
             )
@@ -324,14 +324,18 @@ class MainActivity : AbstractExampleActivity() {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                poTransaction.prepareReadRecordFile(
+                poTransaction.prepareReadRecords(
                     CalypsoClassicInfo.SFI_EventLog,
-                    CalypsoClassicInfo.RECORD_NUMBER_1.toInt()
+                    CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                    CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                    CalypsoClassicInfo.RECORD_SIZE
                 )
 
-                poTransaction.prepareReadRecordFile(
+                poTransaction.prepareReadRecords(
                     CalypsoClassicInfo.SFI_Counter1,
-                    CalypsoClassicInfo.RECORD_NUMBER_1.toInt()
+                    CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                    CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                    CalypsoClassicInfo.RECORD_SIZE
                 )
 
                 /*
@@ -444,9 +448,11 @@ class MainActivity : AbstractExampleActivity() {
                         poTransaction.processOpening(WriteAccessLevel.LOAD)
                         addResultEvent("Opening session: SUCCESS")
 
-                        poTransaction.prepareReadRecordFile(
+                        poTransaction.prepareReadRecords(
                             CalypsoClassicInfo.SFI_Counter1,
-                            CalypsoClassicInfo.RECORD_NUMBER_1.toInt()
+                            CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                            CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                            CalypsoClassicInfo.RECORD_SIZE
                         )
                         poTransaction.processCardCommands()
 
@@ -467,9 +473,11 @@ class MainActivity : AbstractExampleActivity() {
                         poTransaction.processOpening(WriteAccessLevel.DEBIT)
                         addResultEvent("Opening session: SUCCESS")
 
-                        poTransaction.prepareReadRecordFile(
+                        poTransaction.prepareReadRecords(
                             CalypsoClassicInfo.SFI_Counter1,
-                            CalypsoClassicInfo.RECORD_NUMBER_1.toInt()
+                            CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                            CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
+                            CalypsoClassicInfo.RECORD_SIZE
                         )
                         poTransaction.processCardCommands()
 

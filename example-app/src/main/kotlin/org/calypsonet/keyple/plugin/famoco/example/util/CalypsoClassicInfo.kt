@@ -45,6 +45,8 @@ object CalypsoClassicInfo {
     const val eventLog_dataFill =
         "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC"
 
+    const val RECORD_SIZE = 29
+
     // Security settings
     const val SAM_PROFILE_NAME = "SAM C1"
 
