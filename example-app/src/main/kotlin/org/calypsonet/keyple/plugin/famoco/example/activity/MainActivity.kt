@@ -36,7 +36,7 @@ import org.eclipse.keyple.core.service.KeyplePluginException
 import org.eclipse.keyple.core.service.ObservableReader
 import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
-import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.HexUtil
 import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
@@ -280,7 +280,7 @@ class MainActivity : AbstractExampleActivity() {
 
                 addResultEvent(
                     "Environment and Holder file: ${
-                        ByteArrayUtil.toHex(
+                        HexUtil.toHex(
                             efEnvironmentHolder.data.content
                         )
                     }"
@@ -349,7 +349,7 @@ class MainActivity : AbstractExampleActivity() {
                     poTransaction.processOpening(WriteAccessLevel.LOAD)
                     addResultEvent("Opening session: SUCCESS")
                     val counter = readCounter(selectionsResult)
-                    val eventLog = ByteArrayUtil.toHex(readEventLog(selectionsResult))
+                    val eventLog = HexUtil.toHex(readEventLog(selectionsResult))
 
                     addActionEvent("Process PO Closing session")
                     poTransaction.processClosing()
@@ -363,7 +363,7 @@ class MainActivity : AbstractExampleActivity() {
                     addResultEvent("Counter value: ${readCounter(selectionsResult)}")
                     addResultEvent(
                         "EventLog file: ${
-                            ByteArrayUtil.toHex(
+                            HexUtil.toHex(
                                 readEventLog(
                                     selectionsResult
                                 )
@@ -422,7 +422,7 @@ class MainActivity : AbstractExampleActivity() {
             if (selectionsResult.activeSelectionIndex != -1) {
                 addResultEvent("Calypso PO selection: SUCCESS")
                 val calypsoPo = selectionsResult.activeSmartCard as CalypsoCard
-                addResultEvent("AID: ${ByteArrayUtil.fromHex(CalypsoClassicInfo.AID)}")
+                addResultEvent("AID: ${HexUtil.toByteArray(CalypsoClassicInfo.AID)}")
 
                 val famocoPlugin =
                     SmartCardServiceProvider.getService().getPlugin(AndroidFamocoPlugin.PLUGIN_NAME)

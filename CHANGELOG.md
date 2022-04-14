@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - "CHANGELOG.md" file (issue [#22]).
 - CI: Forbid the publication of a version already released (issue [#20]).
+### Upgraded
+- "Keyple Util Library" to version `2.1.0` by removing the use of deprecated methods.
 ### Upgraded examples
 - "Calypsonet Terminal Calypso API" to version `1.1.+`
 - "Keyple Service Resource Library" to version `2.0.1`

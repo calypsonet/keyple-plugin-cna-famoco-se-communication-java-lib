@@ -15,7 +15,7 @@ import com.famoco.secommunication.ALPARProtocol
 import com.famoco.secommunication.SmartcardReader
 import org.calypsonet.keyple.plugin.famoco.AndroidFamocoReader.Companion.READER_NAME
 import org.eclipse.keyple.core.plugin.spi.reader.ReaderSpi
-import org.eclipse.keyple.core.util.ByteArrayUtil
+import org.eclipse.keyple.core.util.HexUtil
 import timber.log.Timber
 
 internal class AndroidFamocoReaderAdapter :
@@ -38,22 +38,22 @@ internal class AndroidFamocoReaderAdapter :
 
     override fun transmitApdu(apduIn: ByteArray?): ByteArray {
         Timber.d("Data Length to be sent to tag : ${apduIn?.size}")
-        Timber.d("Data In : ${ByteArrayUtil.toHex(apduIn)}")
+        Timber.d("Data In : ${HexUtil.toHex(apduIn)}")
         val apduOut = mSmarcardReader.sendApdu(apduIn)
-        Timber.d("Data Out : ${ByteArrayUtil.toHex(apduOut)}")
+        Timber.d("Data Out : ${HexUtil.toHex(apduOut)}")
         return apduOut
     }
 
     override fun getPowerOnData(): String {
         Timber.d("getAtr()")
-        Timber.d("ATR = ${ByteArrayUtil.toHex(atr)}")
-        return ByteArrayUtil.toHex(atr)
+        Timber.d("ATR = ${HexUtil.toHex(atr)}")
+        return HexUtil.toHex(atr)
     }
 
     override fun openPhysicalChannel() {
         Timber.d("openPhysicalChannel()")
         atr = mSmarcardReader.powerOn()
-        Timber.d("ATR = ${ByteArrayUtil.toHex(atr)}")
+        Timber.d("ATR = ${HexUtil.toHex(atr)}")
         mSmarcardReader.setClockCard(ALPARProtocol.PARAM_CLOCK_FREQUENCY_3_68MHz)
         poweredOn = true
     }
