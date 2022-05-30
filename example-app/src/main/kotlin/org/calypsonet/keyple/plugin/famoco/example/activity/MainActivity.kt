@@ -37,7 +37,6 @@ import org.eclipse.keyple.core.service.ObservableReader
 import org.eclipse.keyple.core.service.Reader
 import org.eclipse.keyple.core.service.SmartCardServiceProvider
 import org.eclipse.keyple.core.util.HexUtil
-import org.eclipse.keyple.core.util.protocol.ContactlessCardCommonProtocol
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactoryProvider
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader
 import timber.log.Timber
@@ -48,7 +47,7 @@ class MainActivity : AbstractExampleActivity() {
     private lateinit var samReader: Reader
 
     private lateinit var cardSelectionManager: CardSelectionManager
-    private lateinit var contactlessCardProtocol: ContactlessCardCommonProtocol
+    private lateinit var contactlessCardProtocol: String
 
     private enum class TransactionType {
         DECREASE,
@@ -81,10 +80,10 @@ class MainActivity : AbstractExampleActivity() {
 //        (poReader as AndroidNfcReader).skipNdefCheck = false
 
         (poReader as ObservableReader).addObserver(this)
-        contactlessCardProtocol = ContactlessCardCommonProtocol.ISO_14443_4
+        contactlessCardProtocol = "ISO_14443_4_CARD"
         (poReader as ConfigurableReader).activateProtocol(
-            contactlessCardProtocol.name,
-            contactlessCardProtocol.name
+            contactlessCardProtocol,
+            contactlessCardProtocol
         )
 
         // Configuration for Sam Reader. Sam access provided by Famoco lib-secommunication
@@ -182,7 +181,7 @@ class MainActivity : AbstractExampleActivity() {
                 calypsoCardExtensionProvider.createCardSelection()
             poSelectionRequest
                 .filterByDfName(CalypsoClassicInfo.AID)
-                .filterByCardProtocol(contactlessCardProtocol.name)
+                .filterByCardProtocol(contactlessCardProtocol)
 
             /* Prepare the reading order and keep the associated parser for later use once the
              selection has been made. */
