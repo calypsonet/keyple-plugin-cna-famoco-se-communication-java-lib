@@ -5,17 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.1] - 2022-06-09
 ### Added
-- "CHANGELOG.md" file (issue [#22]).
+- `CHANGELOG.md` file (issue [#22]).
 - CI: Forbid the publication of a version already released (issue [#20]).
 ### Fixed
 - Removal of the unused Jacoco plugin for compiling Android applications that had an unwanted side effect when the application was launched (stacktrace with warnings).
 ### Upgraded
 - "Keyple Util Library" to version `2.1.0` by removing the use of deprecated methods.
 ### Upgraded examples
-- "Calypsonet Terminal Calypso API" to version `1.1.+`
+- "Calypsonet Terminal Calypso API" to version `1.2.+`
 - "Keyple Service Resource Library" to version `2.0.1`
-- "Keyple Card Calypso Library" to version `2.1.0`
+- "Keyple Card Calypso Library" to version `2.2.0`
+- "Keyple Plugin Android NFC Library" to version `2.0.1`
 
 ## [2.0.0] - 2021-10-06
 ### Changed
@@ -24,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-12-18
 This is the initial release.
 
-[unreleased]: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib/compare/2.0.0...HEAD
+[unreleased]: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib/compare/2.0.1...HEAD
+[2.0.1]: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib/compare/1.0.0...2.0.0
 [1.0.0]: https://github.com/calypsonet/keyple-plugin-cna-famoco-se-communication-java-lib/releases/tag/1.0.0
 

@@ -358,7 +358,7 @@ class MainActivity : AbstractExampleActivity() {
                     addResultEvent("Counter value: $counter")
                     addResultEvent("EventLog file: $eventLog")
                 } else {
-                    poTransaction.processCardCommands()
+                    poTransaction.processCommands()
                     addResultEvent("Counter value: ${readCounter(selectionsResult)}")
                     addResultEvent(
                         "EventLog file: ${
@@ -453,7 +453,7 @@ class MainActivity : AbstractExampleActivity() {
                             CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
                             CalypsoClassicInfo.RECORD_SIZE
                         )
-                        poTransaction.processCardCommands()
+                        poTransaction.processCommands()
 
                         poTransaction.prepareIncreaseCounter(
                             CalypsoClassicInfo.SFI_Counter1,
@@ -478,7 +478,7 @@ class MainActivity : AbstractExampleActivity() {
                             CalypsoClassicInfo.RECORD_NUMBER_1.toInt(),
                             CalypsoClassicInfo.RECORD_SIZE
                         )
-                        poTransaction.processCardCommands()
+                        poTransaction.processCommands()
 
                         /*
                              * A ratification command will be sent (CONTACTLESS_MODE).

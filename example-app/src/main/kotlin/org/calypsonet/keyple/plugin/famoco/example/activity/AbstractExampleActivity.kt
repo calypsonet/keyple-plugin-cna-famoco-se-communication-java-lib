@@ -238,7 +238,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
         val samCardResourceExtension =
             CalypsoExtensionService.getInstance()
 
-        val sec = samCardResourceExtension.createCardSecuritySetting()
+        samCardResourceExtension.createCardSecuritySetting()
 
         // Create security settings that reference the same SAM profile requested from the card resource
         // service and enable the multiple session mode.
@@ -249,7 +249,7 @@ abstract class AbstractExampleActivity : AppCompatActivity(), NavigationView.OnN
 
         val cardSecuritySetting = CalypsoExtensionService.getInstance()
             .createCardSecuritySetting()
-            .setSamResource(samResource.reader, samResource.smartCard as CalypsoSam)
+            .setControlSamResource(samResource.reader, samResource.smartCard as CalypsoSam)
             .assignDefaultKif(
                 WriteAccessLevel.PERSONALIZATION,
                 DEFAULT_KIF_PERSO
