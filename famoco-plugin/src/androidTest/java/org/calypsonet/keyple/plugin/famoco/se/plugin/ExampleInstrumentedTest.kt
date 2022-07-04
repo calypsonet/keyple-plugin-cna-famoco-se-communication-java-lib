@@ -24,10 +24,10 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals("org.eclipse.keyple.famoco.se.plugin.test", appContext.packageName)
-    }
+  @Test
+  fun useAppContext() {
+    // Context of the app under test.
+    val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+    Assert.assertEquals("org.eclipse.keyple.famoco.se.plugin.test", appContext.packageName)
+  }
 }

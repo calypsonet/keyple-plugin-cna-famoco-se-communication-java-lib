@@ -12,5 +12,5 @@
 package org.calypsonet.keyple.plugin.famoco
 
 object AndroidFamocoPluginFactoryProvider {
-    fun getFactory(): AndroidFamocoPluginFactory = AndroidFamocoPluginFactoryAdapter()
+  fun getFactory(): AndroidFamocoPluginFactory = AndroidFamocoPluginFactoryAdapter()
 }

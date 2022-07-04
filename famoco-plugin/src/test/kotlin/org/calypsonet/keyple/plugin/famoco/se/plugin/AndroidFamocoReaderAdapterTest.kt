@@ -25,59 +25,60 @@ import org.junit.Test
 @Ignore
 internal class AndroidFamocoReaderAdapterTest {
 
-    companion object {
-        internal const val PLUGIN_NAME = "AndroidFamocoPlugin"
-        internal const val PO_AID = "A000000291A000000191"
-        internal const val PO_AID_RESPONSE = "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"
-    }
+  companion object {
+    internal const val PLUGIN_NAME = "AndroidFamocoPlugin"
+    internal const val PO_AID = "A000000291A000000191"
+    internal const val PO_AID_RESPONSE =
+        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"
+  }
 
-    lateinit var nativeReader: SmartcardReader
-    lateinit var reader: AndroidFamocoReaderAdapter
+  lateinit var nativeReader: SmartcardReader
+  lateinit var reader: AndroidFamocoReaderAdapter
 
-    @Before
-    fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
-        // default reader connected with secure element with poAid
-        nativeReader = mockReader()
+  @Before
+  fun setUp() {
+    MockKAnnotations.init(this, relaxUnitFun = true)
+    // default reader connected with secure element with poAid
+    nativeReader = mockReader()
 
-        // instantiate reader with nativeReader
-        reader = AndroidFamocoReaderAdapter()
-    }
+    // instantiate reader with nativeReader
+    reader = AndroidFamocoReaderAdapter()
+  }
 
-    @After
-    fun tearDown() {
-        unmockkAll()
-    }
-    /*
-     * TEST READERS
-     */
+  @After
+  fun tearDown() {
+    unmockkAll()
+  }
+  /*
+   * TEST READERS
+   */
 
-    @Test
-    fun getInstance() {
-        Assert.assertNotNull(reader)
-    }
+  @Test
+  fun getInstance() {
+    Assert.assertNotNull(reader)
+  }
 
-    @Test
-    fun getName() {
-        Assert.assertEquals(getNativeReaderName(), reader.name)
-    }
+  @Test
+  fun getName() {
+    Assert.assertEquals(getNativeReaderName(), reader.name)
+  }
 
-    @Test
-    fun isContactless() {
-        Assert.assertEquals(true, reader.isContactless)
-    }
+  @Test
+  fun isContactless() {
+    Assert.assertEquals(true, reader.isContactless)
+  }
 
-    @Test
-    fun isSEPresent() {
-        Assert.assertEquals(true, reader.checkCardPresence())
-    }
+  @Test
+  fun isSEPresent() {
+    Assert.assertEquals(true, reader.checkCardPresence())
+  }
 
-    fun getNativeReaderName(): String {
-        return reader.name
-    }
+  fun getNativeReaderName(): String {
+    return reader.name
+  }
 
-    fun mockReader(): SmartcardReader {
-        val nativeReader = mockk<SmartcardReader>()
-        return nativeReader
-    }
+  fun mockReader(): SmartcardReader {
+    val nativeReader = mockk<SmartcardReader>()
+    return nativeReader
+  }
 }

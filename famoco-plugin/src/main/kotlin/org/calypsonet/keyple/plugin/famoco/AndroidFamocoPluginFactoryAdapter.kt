@@ -18,11 +18,11 @@ import org.eclipse.keyple.core.plugin.spi.PluginSpi
 
 class AndroidFamocoPluginFactoryAdapter : AndroidFamocoPluginFactory, PluginFactorySpi {
 
-    override fun getPluginName(): String = AndroidFamocoPlugin.PLUGIN_NAME
+  override fun getPluginName(): String = AndroidFamocoPlugin.PLUGIN_NAME
 
-    override fun getPlugin(): PluginSpi = AndroidFamocoPluginAdapter()
+  override fun getPlugin(): PluginSpi = AndroidFamocoPluginAdapter()
 
-    override fun getCommonApiVersion(): String = CommonApiProperties.VERSION
+  override fun getCommonApiVersion(): String = CommonApiProperties.VERSION
 
-    override fun getPluginApiVersion(): String = PluginApiProperties.VERSION
+  override fun getPluginApiVersion(): String = PluginApiProperties.VERSION
 }

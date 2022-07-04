@@ -15,8 +15,8 @@ import org.eclipse.keyple.core.common.KeypleReaderExtension
 
 // Allow to provide a non ambiguous name for the reader while keeping it internal
 interface AndroidFamocoReader : KeypleReaderExtension {
-    companion object {
-        const val READER_NAME = "AndroidFamocoReader"
-        const val FLAG_READER_RESET_STATE = "FLAG_READER_RESET_STATE"
-    }
+  companion object {
+    const val READER_NAME = "AndroidFamocoReader"
+    const val FLAG_READER_RESET_STATE = "FLAG_READER_RESET_STATE"
+  }
 }
