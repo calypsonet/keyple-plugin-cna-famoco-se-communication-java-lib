@@ -16,7 +16,7 @@ import org.eclipse.keyple.core.plugin.PluginApiProperties
 import org.eclipse.keyple.core.plugin.spi.PluginFactorySpi
 import org.eclipse.keyple.core.plugin.spi.PluginSpi
 
-class AndroidFamocoPluginFactoryAdapter : AndroidFamocoPluginFactory, PluginFactorySpi {
+internal class AndroidFamocoPluginFactoryAdapter : AndroidFamocoPluginFactory, PluginFactorySpi {
 
   override fun getPluginName(): String = AndroidFamocoPlugin.PLUGIN_NAME
 
