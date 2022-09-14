@@ -1,6 +1,5 @@
 include(":example-app")
 include(":famoco-plugin")
-include(":famoco-plugin-mock")
 rootProject.name = "keyple-plugin-cna-famoco-se-communication-java-lib"
 
 // Fix resolution of dependencies with dynamic version in order to use SNAPSHOT first when available.
