@@ -1,8 +1,8 @@
-# Notices for "Keyple Plugin CNA Famoco SE Communication Java Lib" Java implementation
+# Notices for "Keyple Plugin SE Communication Lib" Java implementation
 
-This content is produced and maintained by Calypso Networks Association.
+This content was produced by Calypso Networks Association and is maintained by Famoco now.
 
-More information can be found on [calypsonet.org](http://calypsonet.org).
+More information can be found on [calypsonet.org](http://calypsonet.org) and [famoco.org](https://famoco.corg).
 
 ## Trademarks
 

@@ -1,18 +1,18 @@
-# Keyple Plugin CNA Famoco SE Communication Java Library
+# Keyple Plugin SE Communication Library
 
 ## Overview
 
-The **Keyple Plugin CNA Famoco SE Communication Java Library** is an add-on to allow an application using Keyple to interact with Famoco terminals.
+The **Keyple Plugin SE Communication Library** is an add-on to allow an application using Keyple to interact with Famoco terminals.
 
 The current version is based on Famoco's native SE Communication library (SeCommunicaton Library v1.7.0.)
 
-Should be compatible with FX100, FX200 and FC300 series.
+Should be compatible with FX100, FX200, FX205 and FX300 series.
 
 ## Examples
 
 An example of implementation is available in the **example-app** folder.
 
-This Android application is using the Keyple Famoco plugin and Keyple Android NFC plugin, allowing to illustrate multiple Calypso use cases.
+This Android application is using the Keyple Famoco SE communication lib plugin and Keyple Android NFC plugin, allowing to illustrate multiple Calypso use cases.
 
 ## About the source code
 

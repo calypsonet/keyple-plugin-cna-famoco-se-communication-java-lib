@@ -56,8 +56,8 @@ tasks {
     }
     sonarqube {
         properties {
-            property("sonar.projectKey", "eclipse_" + project.name)
-            property("sonar.organization", "eclipse")
+            property("sonar.projectKey", "Famoco_keyple-plugin-se-communication-lib")
+            property("sonar.organization", "famoco")
             property("sonar.host.url", "https://sonarcloud.io")
             property("sonar.login", System.getenv("SONAR_LOGIN"))
             System.getenv("BRANCH_NAME")?.let {
