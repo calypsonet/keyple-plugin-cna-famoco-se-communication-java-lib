@@ -26,13 +26,19 @@ jobs:
       - name: Install gpg secret key
         run: |
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-          gpg --pinentry-mode loopback --passphrase "${{ secrets.OSSRH_GPG_SECRET_PASSWORD }}" --export-secret-key 568FD16F857171A0EC6D2C40742C84722FD2B235 > ~/.gradle/maven-central.gpg
+          gpg --pinentry-mode loopback --passphrase "${{ secrets.OSSRH_GPG_SECRET_PASSWORD }}" --export-secret-key ${{ secrets.OSSRH_GPG_KEY_ID }} > ~/.gradle/maven-central.gpg
           gpg --list-secret-keys --keyid-format LONG
       - name: Check version
         working-directory: .
         run: ./.github/scripts/check_version.sh $(echo "${{ github.ref }}" | sed -e "s,^refs/tags/,,")
       - name: Build and Publish
         working-directory: .
+        env:
+          SIGNING_KEY_ID: ${{ secrets.OSSRH_GPG_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.OSSRH_GPG_SECRET_PASSWORD }}
+          SIGNING_SECRET_KEY_RING_FILE: ~/.gradle/maven-central.gpg
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         run: |
           ./gradlew setVersion -P version=$(echo "${{ github.ref }}" | sed -e "s,^refs/tags/,,")
-          ./gradlew build test release --info --stacktrace
+          ./gradlew build test publish --info --stacktrace

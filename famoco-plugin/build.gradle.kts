@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.konan.properties.suffix
+import org.jetbrains.kotlin.util.suffixIfNot
+
 ///////////////////////////////////////////////////////////////////////////////
 //  GRADLE CONFIGURATION
 ///////////////////////////////////////////////////////////////////////////////
@@ -7,6 +10,82 @@ plugins {
     kotlin("android.extensions")
     id("org.jetbrains.dokka")
     id("com.diffplug.spotless")
+}
+
+ext {
+    val pomArtifactId by extra("keyple-plugin-se-communication-lib")
+    val pomDescription by extra("The Keyple Plugin SE Communication Library is an add-on to allow an application using" +
+                " Keyple to interact with Famoco terminals.")
+    val pomName by extra("keyple-plugin-se-communication-lib")
+    val moduleTitle by extra("Keyple Plugin SE Communication Library")
+    val pomLicenceName by extra("https://www.eclipse.org/legal/epl-2.0/")
+    val pomLicenceURL by extra("http://www.apache.org/licenses/LICENSE-2.0.txt")
+    val pomUrl by extra("https://github.com/Famoco/keyple-plugin-se-communication-lib")
+    val pomOrgName by extra("Famoco")
+    val pomOrgUrl by extra("https://famoco.com")
+    val pomScmUrl by extra("https://github.com/Famoco/keyple-plugin-se-communication-lib")
+    val pomScmConnection by extra("scm:git:git://github.com/Famoco/keyple-plugin-se-communication-lib.git")
+    val pomScmdeveloperConnection by extra("scm:git:https://github.com/Famoco/keyple-plugin-se-communication-lib.git")
+    val pomDevelopersName by extra("Famoco Mobile team")
+    val pomDevelopersemail by extra("support@famoco.com")
+}
+
+/**
+ * Sets version inside the gradle.properties file
+ * Usage: ./gradlew setVersion -P version=1.0.0
+ */
+tasks.register("setVersion") {
+    val backupFile = rootProject.file("gradle.properties.bak")
+    backupFile.delete()
+    val propsFile = rootProject.file("gradle.properties")
+    propsFile.renameTo(backupFile)
+
+    var version = rootProject.version as String
+    version = version.removeSuffix("-SNAPSHOT")
+    propsFile.printWriter().use {
+        var versionApplied = false
+        backupFile.readLines()
+            .forEach { line ->
+                if (line.matches(Regex("version\\s*=.*"))) {
+                    versionApplied = true
+                    it.println("version = $version")
+                } else {
+                    it.println(line)
+                }
+            }
+        if (!versionApplied) {
+            it.println("version = $version")
+        }
+    }
+
+    println("Setting new version for ${rootProject.name} to $version")
+}
+
+tasks.register("setSnapshot") {
+    val backupFile = rootProject.file("gradle.properties.bak")
+    backupFile.delete()
+    val propsFile = rootProject.file("gradle.properties")
+    propsFile.renameTo(backupFile)
+
+    var version = rootProject.version as String
+    version = version.suffixIfNot("-SNAPSHOT")
+    propsFile.printWriter().use {
+        var versionApplied = false
+        backupFile.readLines()
+            .forEach { line ->
+                if (line.matches(Regex("version\\s*=.*"))) {
+                    versionApplied = true
+                    it.println("version = $version")
+                } else {
+                    it.println(line)
+                }
+            }
+        if (!versionApplied) {
+            it.println("version = $version")
+        }
+    }
+
+    println("Setting new version for ${rootProject.name} to $version")
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,6 +192,7 @@ dependencies {
 ///////////////////////////////////////////////////////////////////////////////
 //  TASKS CONFIGURATION
 ///////////////////////////////////////////////////////////////////////////////
+
 tasks {
     dokkaHtml.configure {
         dokkaSourceSets {
@@ -124,5 +204,4 @@ tasks {
         }
     }
 }
-apply(plugin = "org.eclipse.keyple") // To do last
-
+apply(from = "maven.gradle")  // To do last

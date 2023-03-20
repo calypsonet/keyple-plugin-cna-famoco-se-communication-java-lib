@@ -33,4 +33,6 @@ jobs:
         run: ./.github/scripts/check_version.sh
       - name: Build and Publish
         working-directory: .
-        run: ./gradlew build test publish --info --stacktrace
+        run: |
+          ./gradlew setSnapshot
+          ./gradlew build test publish --info --stacktrace

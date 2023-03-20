@@ -6,6 +6,7 @@ plugins {
     id("org.sonarqube") version "3.1"
     id("org.jetbrains.dokka") version "1.4.32"
 }
+
 buildscript {
     val kotlinVersion: String by project
     repositories {
@@ -17,21 +18,16 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.android.tools.build:gradle:4.1.3")
-        classpath("org.eclipse.keyple:keyple-gradle:0.2.+") { isChanging = true }
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //  APP CONFIGURATION
 ///////////////////////////////////////////////////////////////////////////////
-allprojects{
-    group = "org.calypsonet.keyple"
+allprojects {
     repositories {
-        mavenLocal()
-        maven(url = "https://repo.eclipse.org/service/local/repositories/maven_central/content")
+        maven (url = "https://s01.oss.sonatype.org/content/repositories/snapshots" )
         mavenCentral()
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
-        maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots")
         google()
     }
 }
