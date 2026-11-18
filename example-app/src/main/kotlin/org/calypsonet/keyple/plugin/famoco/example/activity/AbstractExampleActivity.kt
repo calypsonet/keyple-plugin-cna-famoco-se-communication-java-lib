@@ -20,16 +20,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.activity_main.drawerLayout
-import kotlinx.android.synthetic.main.activity_main.eventRecyclerView
-import kotlinx.android.synthetic.main.activity_main.navigationView
-import kotlinx.android.synthetic.main.activity_main.toolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.calypsonet.keyple.plugin.famoco.AndroidFamocoReader
 import org.calypsonet.keyple.plugin.famoco.example.R
 import org.calypsonet.keyple.plugin.famoco.example.adapter.EventAdapter
+import org.calypsonet.keyple.plugin.famoco.example.databinding.ActivityMainBinding
 import org.calypsonet.keyple.plugin.famoco.example.model.ChoiceEventModel
 import org.calypsonet.keyple.plugin.famoco.example.model.EventModel
 import org.calypsonet.keyple.plugin.famoco.example.util.CalypsoClassicInfo.SAM_PROFILE_NAME
@@ -66,6 +63,9 @@ abstract class AbstractExampleActivity :
 
   protected var useCase: UseCase? = null
 
+  /** Views of the activity layout, set by [initContentView] */
+  protected lateinit var binding: ActivityMainBinding
+
   protected lateinit var calypsoCardExtensionProvider: CalypsoExtensionService
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,19 +75,20 @@ abstract class AbstractExampleActivity :
     /** Init recycler view */
     adapter = EventAdapter(events)
     layoutManager = LinearLayoutManager(this)
-    eventRecyclerView.layoutManager = layoutManager
-    eventRecyclerView.adapter = adapter
+    binding.eventRecyclerView.layoutManager = layoutManager
+    binding.eventRecyclerView.adapter = adapter
 
     /** Init menu */
-    navigationView.setNavigationItemSelectedListener(this)
+    binding.navigationView.setNavigationItemSelectedListener(this)
     val toggle =
         ActionBarDrawerToggle(
             this,
-            drawerLayout,
-            toolbar,
+            binding.drawerLayout,
+            binding.toolbar,
             R.string.open_navigation_drawer,
-            R.string.close_navigation_drawer)
-    drawerLayout.addDrawerListener(toggle)
+            R.string.close_navigation_drawer,
+        )
+    binding.drawerLayout.addDrawerListener(toggle)
     toggle.syncState()
 
     initReaders()
@@ -136,7 +137,7 @@ abstract class AbstractExampleActivity :
   protected fun addChoiceEvent(
       title: String,
       choices: List<String>,
-      callback: (choice: String) -> Unit
+      callback: (choice: String) -> Unit,
   ) {
     events.add(ChoiceEventModel(title, choices, callback))
     updateList()
@@ -147,10 +148,12 @@ abstract class AbstractExampleActivity :
     CoroutineScope(Dispatchers.Main).launch {
       adapter.notifyDataSetChanged()
       adapter.notifyItemInserted(events.lastIndex)
-      eventRecyclerView.smoothScrollToPosition(events.size - 1)
+      binding.eventRecyclerView.smoothScrollToPosition(events.size - 1)
     }
   }
+
   abstract fun initContentView()
+
   abstract fun initReaders()
 
   /**
@@ -164,7 +167,7 @@ abstract class AbstractExampleActivity :
   open fun setupCardResourceService(
       plugin: Plugin,
       readerNameRegex: String?,
-      samProfileName: String?
+      samProfileName: String?,
   ) {
     // Create a card resource extension expecting a SAM "C1".
     val samSelection =
@@ -188,8 +191,7 @@ abstract class AbstractExampleActivity :
     // - two card resource profiles A and B are defined, each expecting a specific card
     // characterized by its power-on data and placed in a specific reader.
     // - the timeout for using the card's resources is set at 5 seconds.
-    cardResourceService
-        .configurator
+    cardResourceService.configurator
         .withBlockingAllocationMode(100, 10000)
         .withPlugins(
             PluginsConfigurator.builder()
@@ -197,13 +199,16 @@ abstract class AbstractExampleActivity :
                     plugin,
                     ReaderConfigurator(),
                     pluginAndReaderExceptionHandler,
-                    pluginAndReaderExceptionHandler)
+                    pluginAndReaderExceptionHandler,
+                )
                 .withUsageTimeout(5000)
-                .build())
+                .build()
+        )
         .withCardResourceProfiles(
             CardResourceProfileConfigurator.builder(samProfileName, samCardResourceExtension)
                 .withReaderNameRegex(readerNameRegex)
-                .build())
+                .build()
+        )
         .configure()
 
     cardResourceService.start()
@@ -218,7 +223,9 @@ abstract class AbstractExampleActivity :
                     "Unable to retrieve a SAM card resource for profile '%s' from reader '%s' in plugin '%s'",
                     samProfileName,
                     readerNameRegex,
-                    plugin.name))
+                    plugin.name,
+                )
+            )
 
     // release the resource
     cardResourceService.releaseCardResource(cardResource)

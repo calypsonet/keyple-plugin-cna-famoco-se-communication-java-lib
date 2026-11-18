@@ -15,9 +15,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.card_action_event.view.cardActionTextView
-import kotlinx.android.synthetic.main.card_choice_event.view.choiceRadioGroup
 import org.calypsonet.keyple.plugin.famoco.example.R
 import org.calypsonet.keyple.plugin.famoco.example.model.ChoiceEventModel
 import org.calypsonet.keyple.plugin.famoco.example.model.EventModel
@@ -30,20 +30,20 @@ class EventAdapter(private val events: ArrayList<EventModel>) :
     return when (viewType) {
       EventModel.TYPE_ACTION ->
           ViewHolder(
-              LayoutInflater.from(parent.context)
-                  .inflate(R.layout.card_action_event, parent, false))
+              LayoutInflater.from(parent.context).inflate(R.layout.card_action_event, parent, false)
+          )
       EventModel.TYPE_RESULT ->
           ViewHolder(
-              LayoutInflater.from(parent.context)
-                  .inflate(R.layout.card_result_event, parent, false))
+              LayoutInflater.from(parent.context).inflate(R.layout.card_result_event, parent, false)
+          )
       EventModel.TYPE_MULTICHOICE ->
           ChoiceViewHolder(
-              LayoutInflater.from(parent.context)
-                  .inflate(R.layout.card_choice_event, parent, false))
+              LayoutInflater.from(parent.context).inflate(R.layout.card_choice_event, parent, false)
+          )
       else ->
           ViewHolder(
-              LayoutInflater.from(parent.context)
-                  .inflate(R.layout.card_header_event, parent, false))
+              LayoutInflater.from(parent.context).inflate(R.layout.card_header_event, parent, false)
+          )
     }
   }
 
@@ -61,7 +61,7 @@ class EventAdapter(private val events: ArrayList<EventModel>) :
 
   open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     open fun bind(event: EventModel) {
-      with(itemView) { cardActionTextView.text = event.text }
+      itemView.findViewById<TextView>(R.id.cardActionTextView).text = event.text
     }
   }
 
@@ -69,6 +69,7 @@ class EventAdapter(private val events: ArrayList<EventModel>) :
     override fun bind(event: EventModel) {
       super.bind(event)
       with(itemView) {
+        val choiceRadioGroup = findViewById<RadioGroup>(R.id.choiceRadioGroup)
         choiceRadioGroup.removeAllViews()
         (event as ChoiceEventModel).choices.forEachIndexed { index, choice ->
           val button = RadioButton(this.context)

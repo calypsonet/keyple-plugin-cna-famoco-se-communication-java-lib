@@ -1,113 +1,108 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  GRADLE CONFIGURATION
 ///////////////////////////////////////////////////////////////////////////////
+
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    kotlin("android.extensions")
-    id("com.diffplug.spotless")
+  id("com.android.application")
+  id("com.diffplug.spotless")
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //  APP CONFIGURATION
 ///////////////////////////////////////////////////////////////////////////////
-val kotlinVersion: String by project
-val archivesBaseName: String by project
-android {
-    compileSdkVersion(29)
-    buildToolsVersion("30.0.2")
-
-    defaultConfig {
-        applicationId("org.calypsonet.keyple.plugin.famoco.example")
-        minSdkVersion(19)
-        targetSdkVersion(29)
-        versionName(project.version.toString())
-
-        testInstrumentationRunner("android.support.test.runner.AndroidJUnitRunner")
-        multiDexEnabled = true
-    }
-
-    buildTypes {
-        getByName("release") {
-            minifyEnabled(false)
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-
-    val javaSourceLevel: String by project
-    val javaTargetLevel: String by project
-    compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(javaSourceLevel)
-        targetCompatibility = JavaVersion.toVersion(javaTargetLevel)
-    }
-
-    packagingOptions {
-        exclude("META-INF/NOTICE.md")
-    }
-
-    lintOptions {
-        isAbortOnError = false
-    }
-
-    kotlinOptions {
-        jvmTarget = javaTargetLevel
-    }
-
-    sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
-        getByName("test").java.srcDirs("src/test/kotlin")
-    }
-}
 
 dependencies {
+  // Famoco Keyple plugin
+  implementation(project(path = ":plugin"))
+  // Keyple (APIs of the Keyple 2.x generation, used by the code of this example)
+  implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+") {
+    isChanging = true
+  }
+  implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.2.+") {
+    isChanging = true
+  }
+  implementation("org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.1")
+  implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+") { isChanging = true }
+  implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.0")
+  implementation("org.eclipse.keyple:keyple-service-resource-java-lib:2.0.2")
+  implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.2.1")
+  implementation("org.eclipse.keyple:keyple-util-java-lib:2.+") { isChanging = true }
+  // Android components
+  implementation("androidx.appcompat:appcompat:1.7.1")
+  implementation("com.google.android.material:material:1.13.0")
+  implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+  implementation("androidx.activity:activity-ktx:1.10.1")
+  implementation("androidx.fragment:fragment-ktx:1.8.9")
+  implementation("androidx.core:core-ktx:1.16.0")
+  // Coroutines
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+  // Logging libraries used in the project:
+  // - SLF4J API provides a common logging interface for the app and third-party libraries (e.g.,
+  //   Keyple).
+  // - slf4j-timber bridges SLF4J calls to Timber for Android logging.
+  // - Timber is used as the primary Android logging framework, offering lightweight and flexible
+  //   logging.
+  implementation("org.slf4j:slf4j-api:1.7.36")
+  implementation("com.arcao:slf4j-timber:3.1@aar")
+  implementation("com.jakewharton.timber:timber:5.0.1")
+  // Tests
+  testImplementation("junit:junit:4.13.2")
+  androidTestImplementation("androidx.test:runner:1.7.0")
+  androidTestImplementation("androidx.test.ext:junit:1.3.0")
+  androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+}
 
-    //Keyple Common
-    implementation(project(path = ":famoco-plugin"))
-    implementation("org.calypsonet.terminal:calypsonet-terminal-reader-java-api:1.0.+") { isChanging = true }
-    implementation("org.calypsonet.terminal:calypsonet-terminal-calypso-java-api:1.2.+") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-plugin-android-nfc-java-lib:2.0.1")
-    implementation("org.eclipse.keyple:keyple-common-java-api:2.0.+") { isChanging = true }
-    implementation("org.eclipse.keyple:keyple-service-java-lib:2.1.0")
-    implementation("org.eclipse.keyple:keyple-service-resource-java-lib:2.0.2")
-    implementation("org.eclipse.keyple:keyple-card-calypso-java-lib:2.2.1")
-    implementation("org.eclipse.keyple:keyple-util-java-lib:2.+") { isChanging = true }
+///////////////////////////////////////////////////////////////////////////////
+//  STANDARD CONFIGURATION FOR ANDROID APPLICATION KOTLIN-BASED PROJECTS
+///////////////////////////////////////////////////////////////////////////////
 
-    /*
-    Android components
-    */
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("com.google.android.material:material:1.3.0")
-    implementation("androidx.constraintlayout:constraintlayout:1.1.3")
-    implementation("androidx.activity:activity-ktx:1.2.1")
-    implementation("androidx.fragment:fragment-ktx:1.3.1")
+val javaSourceLevel: String by project
+val javaTargetLevel: String by project
 
-    /*
-    Log
-    */
-    implementation("org.slf4j:slf4j-api:1.7.32")
-    implementation("com.jakewharton.timber:timber:4.7.1")
-    implementation("com.arcao:slf4j-timber:3.1@aar") //SLF4J binding for Timber
+android {
+  namespace = project.findProperty("androidAppNamespace") as String
+  compileSdk = (project.findProperty("androidCompileSdk") as String).toInt()
+  defaultConfig {
+    applicationId = project.findProperty("androidAppId") as String
+    minSdk = (project.findProperty("androidMinSdk") as String).toInt()
+    targetSdk = (project.findProperty("androidCompileSdk") as String).toInt()
+    versionCode = (project.findProperty("androidAppVersionCode") as String).toInt()
+    versionName = project.version.toString()
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+  }
+  buildFeatures { viewBinding = true }
+  buildTypes {
+    getByName("release") {
+      isMinifyEnabled = false
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+  }
+  compileOptions {
+    sourceCompatibility = JavaVersion.toVersion(javaSourceLevel)
+    targetCompatibility = JavaVersion.toVersion(javaTargetLevel)
+  }
+  kotlin { compilerOptions { jvmTarget.set(JvmTarget.fromTarget(javaTargetLevel)) } }
+  packaging {
+    // Exclude 'META-INF/NOTICE.md' to resolve the conflict that occurs when multiple dependencies
+    // include this file
+    resources.excludes.add("META-INF/NOTICE.md")
+  }
+  lint { abortOnError = false }
+}
 
-    /*
-    Kotlin
-    */
-    implementation("androidx.core:core-ktx:1.3.2")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-
-    /*
-    Coroutines
-    */
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
-
-    implementation("androidx.multidex:multidex:2.0.1")
-
-    testImplementation("junit:junit:4.12")
-    androidTestImplementation("com.android.support.test:runner:1.0.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+tasks {
+  spotless {
+    kotlin {
+      target("src/**/*.kt")
+      licenseHeaderFile("${project.rootDir}/LICENSE_HEADER")
+      ktfmt()
+    }
+    kotlinGradle {
+      target("**/*.kts")
+      ktfmt()
+    }
+  }
 }

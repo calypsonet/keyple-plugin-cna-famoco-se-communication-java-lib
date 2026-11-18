@@ -1,0 +1,10 @@
+name: Publish Release package
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-release:
+    uses: calypsonet/calypsonet-actions/.github/workflows/reusable-publish-release.yml@main # NOSONAR - Same organization, trusted source
+    secrets: inherit # NOSONAR - Same organization, trusted source

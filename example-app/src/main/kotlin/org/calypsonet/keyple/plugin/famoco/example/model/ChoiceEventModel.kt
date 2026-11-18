@@ -14,5 +14,5 @@ package org.calypsonet.keyple.plugin.famoco.example.model
 data class ChoiceEventModel(
     val title: String,
     val choices: List<String> = arrayListOf(),
-    val callback: (choice: String) -> Unit
+    val callback: (choice: String) -> Unit,
 ) : EventModel(TYPE_MULTICHOICE, title)

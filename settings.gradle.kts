@@ -1,7 +1,23 @@
-include(":example-app")
-include(":famoco-plugin")
 rootProject.name = "keyple-plugin-cna-famoco-se-communication-java-lib"
 
-// Fix resolution of dependencies with dynamic version in order to use SNAPSHOT first when available.
-// See explanation here : https://docs.gradle.org/6.8.3/userguide/single_versions.html
-enableFeaturePreview("VERSION_ORDERING_V2")
+include(":plugin")
+
+include(":example-app")
+
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+    google()
+    mavenCentral()
+  }
+}
+
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+  repositories {
+    google()
+    mavenCentral()
+    mavenLocal()
+    maven(url = "https://central.sonatype.com/repository/maven-snapshots")
+  }
+}

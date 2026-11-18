@@ -1,0 +1,9 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    uses: calypsonet/calypsonet-actions/.github/workflows/reusable-build-and-test.yml@main # NOSONAR - Same organization, trusted source
