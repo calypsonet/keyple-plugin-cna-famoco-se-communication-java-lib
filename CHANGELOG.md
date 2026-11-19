@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Android Gradle plugin from `4.1.3` to `9.4.1`, Gradle from `6.8.3` to `9.8.1`, Dokka from `1.4.32` to `2.2.0`, and
   Spotless from `5.10.2` to `8.2.1`
 - Android `compileSdk` from `29` to `35`
+- Example app: Keyple components of the `keyple-java-bom` `2026.11.10` (Keypop APIs, `keyple-service-java-lib` `3.5.0`,
+  `keyple-card-calypso-java-lib` `3.3.1`, `keyple-card-calypso-crypto-legacysam-java-lib` `1.0.2` and
+  `keyple-plugin-android-nfc-java-lib` `3.2.2`) instead of the Keyple 2.x ones, the code being migrated accordingly (the
+  SAM being selected directly instead of using the card resource service).
 ### CI
 - Workflows migrated to the reusable workflows of `calypsonet-actions` (build and test, publication of the snapshots
   and of the releases to Maven Central via the Central Portal), with JDK `17`; the project version ends with
