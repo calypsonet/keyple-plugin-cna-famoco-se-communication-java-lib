@@ -5,8 +5,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Java source and target levels `1.6` -> `1.8`, and Kotlin `1.4.20` -> `2.3.21`: Android applications written in
+  Kotlin must now use Kotlin `2.2` or later to compile against this library.
+- Minimum Android SDK `19` -> `26` (Android 8.0), as for the other CNA plugins.
+- Renamed directory `famoco-plugin` to `plugin`, as for the other CNA plugins.
+- `ContactCardCommonProtocols` converted from Java to Kotlin, the plugin being now fully written in Kotlin.
+- Logging through SLF4J instead of Timber, as for the other CNA plugins: `slf4j-api` is now a `compileOnly`
+  dependency, and `timber` and `slf4j-timber` are no longer propagated to the applications, which must provide the
+  SLF4J API and a binding (for example `slf4j-timber`).
+- Build configuration aligned with the other Keyple Android plugins: the `keyple-gradle` plugin is no longer used (POM
+  metadata in `gradle.properties`, license header in the `LICENSE_HEADER` file).
+- Example app: Kotlin synthetic views replaced by View Binding, and target SDK `29` -> `35`.
+### Removed
+- Unused dependencies of the plugin: `androidx.legacy:legacy-support-v4`, `androidx.appcompat:appcompat` and
+  `kotlin-stdlib-jdk7`, as well as the unused `viewBinding` build feature and `kotlin-android-extensions` plugin.
+- Example app: unused resources, legacy launcher icons (the adaptive icon being used from Android 8.0), and the unused
+  `keyple-plugin-android-nfc-java-lib-2.0.0-SNAPSHOT.aar` library file.
+### Upgraded
+- `keyple-common-java-api` from `2.0.0` to `2.0.2`
+- `keyple-plugin-java-api` from `2.0.0` to `2.3.2`
+- `keyple-util-java-lib` from `2.1.0` to `2.5.0`
+- `slf4j-api` from `1.7.32` to `1.7.36` (`compileOnly`)
+- Android Gradle plugin from `4.1.3` to `9.4.1`, Gradle from `6.8.3` to `9.8.1`, Dokka from `1.4.32` to `2.2.0`, and
+  Spotless from `5.10.2` to `8.2.1`
+- Android `compileSdk` from `29` to `35`
+- Example app: Keyple components of the `keyple-java-bom` `2026.11.10` (Keypop APIs, `keyple-service-java-lib` `3.5.0`,
+  `keyple-card-calypso-java-lib` `3.3.1`, `keyple-card-calypso-crypto-legacysam-java-lib` `1.0.2` and
+  `keyple-plugin-android-nfc-java-lib` `3.2.2`) instead of the Keyple 2.x ones, the code being migrated accordingly (the
+  SAM being selected directly instead of using the card resource service).
 ### CI
-- Automation of the right to execute (x) shell scripts.
+- Workflows migrated to the reusable workflows of `calypsonet-actions` (build and test, publication of the snapshots
+  and of the releases to Maven Central via the Central Portal), with JDK `17`; the project version ends with
+  `-SNAPSHOT`, the release version being given by the release tag.
 
 ## [2.0.2] - 2022-09-14
 ### CI

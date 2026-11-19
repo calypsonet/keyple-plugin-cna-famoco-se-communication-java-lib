@@ -13,11 +13,9 @@ package org.calypsonet.keyple.plugin.famoco.example.util
 
 /**
  * Helper class to provide specific elements to handle Calypso cards.
- *
  * * AID application selection (default Calypso AID)
  * * SAM_C1_ATR_REGEX regular expression matching the expected C1 SAM ATR
  * * Files infos (SFI, rec number, etc) for
- *
  * * Environment and Holder
  * * Event Log
  * * Contract List
@@ -42,9 +40,4 @@ object CalypsoClassicInfo {
   const val eventLog_dataFill = "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC"
 
   const val RECORD_SIZE = 29
-
-  // Security settings
-  const val SAM_PROFILE_NAME = "SAM C1"
-
-  const val SAM_READER_NAME_REGEX = ".*FamocoReader"
 }
