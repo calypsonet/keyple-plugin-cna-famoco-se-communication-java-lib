@@ -121,13 +121,6 @@ tasks {
       licenseHeaderFile("${project.rootDir}/LICENSE_HEADER")
       ktfmt()
     }
-    java {
-      target("src/**/*.java")
-      licenseHeaderFile("${project.rootDir}/LICENSE_HEADER")
-      importOrder("java", "javax", "org", "com", "")
-      removeUnusedImports()
-      googleJavaFormat()
-    }
     kotlinGradle {
       target("**/*.kts")
       ktfmt()

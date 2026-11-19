@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Kotlin must now use Kotlin `2.2` or later to compile against this library.
 - Minimum Android SDK `19` -> `26` (Android 8.0), as for the other CNA plugins.
 - Renamed directory `famoco-plugin` to `plugin`, as for the other CNA plugins.
+- `ContactCardCommonProtocols` converted from Java to Kotlin, the plugin being now fully written in Kotlin.
 - Logging through SLF4J instead of Timber, as for the other CNA plugins: `slf4j-api` is now a `compileOnly`
   dependency, and `timber` and `slf4j-timber` are no longer propagated to the applications, which must provide the
   SLF4J API and a binding (for example `slf4j-timber`).
