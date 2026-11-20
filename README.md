@@ -6,7 +6,7 @@ The **Keyple Plugin CNA Famoco SE Communication Java Library** is an add-on to a
 
 The current version is based on Famoco's native SE Communication library (SeCommunicaton Library v1.7.0.)
 
-Should be compatible with FX100, FX200 and FC300 series.
+Compatible with the FX100, FX200, FX300 and FX900 series (for example, FX100, FX105, FX200, FX205, FX300, FX915, FX920, FX925), see the [Keyple reader extensions](https://keyple-support.calypsonet.org/add-ons/plugin-ext/).
 
 ## Examples
 

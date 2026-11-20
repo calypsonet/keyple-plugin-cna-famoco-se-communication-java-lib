@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- README: compatible terminals completed with the FX900 series (FX915, FX920, FX925), as listed on the Keyple support
+  site, and "FC300" typo corrected to "FX300".
 
 ## [2.1.0] - 2026-11-19
 ### Changed
